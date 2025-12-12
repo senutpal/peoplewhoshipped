@@ -1,0 +1,133 @@
+# =============================================================================
+# Leaderboard Configuration
+# =============================================================================
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ohcnetwork/leaderboard/refs/heads/main/config.schema.json
+#
+# This is the main configuration file for your leaderboard instance.
+# It controls organization branding, leaderboard behavior, and role definitions.
+#
+# =============================================================================
+
+# =============================================================================
+# Organization Information
+# =============================================================================
+# Details about your organization displayed on the leaderboard
+
+org:
+  # Organization display name
+  name: Your Organization
+  
+  # Short description shown in the header/footer
+  description: Your organization description here.
+  
+  # Main website URL
+  url: https://your-org.example.com
+  
+  # Logo URL (SVG or PNG recommended, min 128x128)
+  logo_url: https://your-org.example.com/logo.svg
+  
+  # When to start tracking contributions (YYYY-MM-DD format)
+  # Activities before this date will not appear on the leaderboard
+  start_date: 2024-01-01
+  
+  # Social profile links for the organization
+  socials:
+    github: https://github.com/your-org
+    # slack: https://slack.your-org.com
+    # linkedin: https://linkedin.com/company/your-org
+    # email: support@your-org.com
+
+# =============================================================================
+# Site Metadata & SEO
+# =============================================================================
+# Used for page titles, meta tags, and social sharing
+
+meta:
+  # Page title (shown in browser tab)
+  title: Leaderboard - Your Organization
+  
+  # Meta description for SEO and social sharing
+  description: Track weekly contributions across different contributors working on projects in the organisation.
+  
+  # Open Graph image for social sharing (1200x630 recommended)
+  image_url: https://your-org.example.com/og-image.png
+  
+  # Base URL where the leaderboard is hosted
+  site_url: https://leaderboard.your-org.example.com
+  
+  # Favicon URL
+  favicon_url: https://your-org.example.com/favicon.ico
+
+# =============================================================================
+# Leaderboard Configuration
+# =============================================================================
+# Controls how the leaderboard displays and processes data
+
+leaderboard:
+  # Data source: "local" for monorepo data directory
+  data_source: local
+  
+  # Optional: path to custom theme CSS file
+  # theme: ./theme.css
+
+  # ---------------------------------------------------------------------------
+  # Role Definitions
+  # ---------------------------------------------------------------------------
+  # Define contributor roles and their properties
+  # The role key should match the "role" field in contributor markdown files
+  
+  roles:
+    core:
+      name: Core
+      description: Core team member
+      # hidden: false  # Optional: hide this role from leaderboard
+
+    contributor:
+      name: Contributor
+      description: Open source contributor
+
+    bot:
+      name: Bot
+      description: Bot account
+      hidden: true  # Bots are hidden from the leaderboard by default
+
+  # ---------------------------------------------------------------------------
+  # Top Contributors Widget
+  # ---------------------------------------------------------------------------
+  # Which activity types to feature in the "Top Contributors" section
+  # These should match activity definition slugs from @leaderboard/scraper-core
+  
+  top_contributors:
+    - pr_merged      # Pull requests merged
+    - pr_opened      # Pull requests opened
+    - eod_update     # EOD updates posted
+    - pr_reviewed    # Pull request reviews
+
+  # ---------------------------------------------------------------------------
+  # Social Profile Icons
+  # ---------------------------------------------------------------------------
+  # Icon mapping for contributor social profiles
+  # Used when rendering contributor profile cards
+  
+  social_profiles:
+    github:
+      icon: github
+    linkedin:
+      icon: linkedin
+    twitter:
+      icon: twitter
+    email:
+      icon: mail
+
+# =============================================================================
+# Scraper Configuration (Reference)
+# =============================================================================
+# Note: In this monorepo setup, scrapers are managed via:
+# - packages/scrapers/github - GitHub activity scraper
+# - packages/scrapers/slack - Slack EOD scraper
+#
+# The scraper schedule is controlled by .github/workflows/scraper.yaml
+# Default: runs every 12 hours (0 */12 * * *)
+#
+# scraper:
+#   schedule: 0 */12 * * *

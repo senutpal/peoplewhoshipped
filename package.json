@@ -5,7 +5,8 @@
   "workspaces": [
     "apps/*",
     "packages/*",
-    "packages/scrapers/*"
+    "packages/scrapers/*",
+    "packages/db-scripts"
   ],
   "scripts": {
     "dev": "bun --filter '*' dev",
@@ -14,6 +15,9 @@
     "test": "bun --filter '*' test",
     "check": "bun --filter '*' check",
     "clean": "bun --filter '*' clean && rm -rf node_modules",
+    "db:prepare": "bun run --filter @leaderboard/db-scripts schema",
+    "db:import": "bun run --filter @leaderboard/db-scripts import",
+    "db:export": "bun run --filter @leaderboard/db-scripts export",
     "scrape:github": "bun run --filter @leaderboard/scraper-github scrape",
     "scrape:slack": "bun run --filter @leaderboard/scraper-slack scrape",
     "scrape:all": "bun --filter '@leaderboard/scraper-*' scrape",

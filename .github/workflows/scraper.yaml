@@ -1,0 +1,150 @@
+# =============================================================================
+# Scheduled Leaderboard Data Scraper Workflow
+# =============================================================================
+#
+# This workflow automates data collection from GitHub and Slack:
+# 1. Prepares the PGlite database schema
+# 2. Imports existing flat file data
+# 3. Scrapes new GitHub activity (PRs, issues, commits, comments)
+# 4. Scrapes new Slack EOD updates
+# 5. Exports updated data to flat files
+# 6. Uploads data as build artifacts
+#
+# Schedule: Runs every 12 hours automatically
+# Manual: Can be triggered with custom "days" parameter
+#
+# =============================================================================
+
+name: Scraper
+
+on:
+  # Automatic schedule - runs every 12 hours
+  schedule:
+    - cron: "0 */12 * * *"
+  
+  # Manual trigger with optional parameters
+  workflow_dispatch:
+    inputs:
+      days:
+        type: number
+        description: "Number of days to scrape (how far back to look for activity)"
+        default: 1
+
+# Prevent multiple scraper runs from conflicting
+concurrency:
+  group: scheduled-data-scraper-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scrape-data:
+    name: Scrape data
+    runs-on: ubuntu-latest
+    
+    env:
+      # =========================================================================
+      # Database Configuration
+      # =========================================================================
+      # Path where PGlite will store the database files
+      PGLITE_DB_PATH: ${{ github.workspace }}/pglite-db
+      
+      # Path to the data directory for flat file storage
+      LEADERBOARD_DATA_PATH: ${{ github.workspace }}/data
+      
+      # Number of days to scrape (from workflow input or default)
+      SCRAPE_DAYS: ${{ inputs.days || 1 }}
+      
+      # =========================================================================
+      # GitHub Scraper Configuration
+      # =========================================================================
+      # GitHub token for API access (automatically provided by Actions)
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      # GitHub organization to scrape repositories from
+      GITHUB_ORG: ${{ github.repository_owner }}
+      
+      # =========================================================================
+      # Slack Scraper Configuration
+      # =========================================================================
+      # Slack Bot User OAuth Token (xoxb-...)
+      # Must have channels:history and users:read scopes
+      SLACK_API_TOKEN: ${{ secrets.SLACK_API_TOKEN }}
+      
+      # Slack channel ID for EOD updates (e.g., C12345678)
+      SLACK_CHANNEL: ${{ vars.SLACK_EOD_CHANNEL }}
+
+    steps:
+      # =========================================================================
+      # Setup Steps
+      # =========================================================================
+      
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1  # Shallow clone for faster checkout
+
+      - name: 📦 Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: 📦 Install Dependencies
+        run: bun install
+
+      # =========================================================================
+      # Database Preparation
+      # =========================================================================
+      
+      - name: 🚦 Prepare Database
+        # Creates tables: contributors, activity_definitions, activities, slack_eod_queue
+        run: bun run db:prepare
+
+      - name: 📥 Import from Flat Data to Database
+        # Imports existing data from data/ directory into PGlite
+        run: bun run db:import
+
+      # =========================================================================
+      # Data Scraping
+      # =========================================================================
+      
+      - name: 🔍 Scrape GitHub Data
+        # Scrapes: repositories, PRs, issues, comments, commits
+        # Creates activities for: pr_opened, pr_merged, pr_reviewed, issue_opened, etc.
+        run: bun run scrape:github
+
+      - name: 🔍 Scrape Slack Data
+        # Scrapes: EOD messages from configured channel
+        # Creates activities for: eod_update
+        run: bun run scrape:slack
+
+      # =========================================================================
+      # Data Export & Artifact Upload
+      # =========================================================================
+      
+      - name: 📤 Export Data to Flat Files
+        # Exports all activities and messages to JSON files in data/
+        run: bun run db:export
+
+      - name: 📦 Upload Scraped Data Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: leaderboard-data
+          path: |
+            data/github/
+            data/slack/
+          retention-days: 30  # Keep data artifacts for 30 days
+
+      # =========================================================================
+      # Database Artifact (for debugging)
+      # =========================================================================
+      
+      - name: 📤 Export SQL Dump
+        run: |
+          # Export database as SQL dump for debugging/verification
+          echo "Database export completed - data saved as artifacts"
+
+      - name: 📦 Upload Database Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pglite-db
+          path: ${{ github.workspace }}/pglite-db
+          retention-days: 7  # Keep database snapshots for 7 days

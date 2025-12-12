@@ -68,3 +68,7 @@ yarn-error.log*
 
 # TypeScript
 *.tsbuildinfo
+
+# PGlite Database
+pglite-db/
+db-data/

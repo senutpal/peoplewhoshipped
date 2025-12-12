@@ -1,0 +1,28 @@
+{
+  "name": "@leaderboard/db-scripts",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "schema": "bun run src/prepare.ts",
+    "import": "bun run src/import.ts",
+    "export": "bun run src/export.ts",
+    "dev": "echo 'db-scripts package ready'",
+    "build": "bun build src/*.ts --outdir dist --target node",
+    "clean": "rm -rf dist",
+    "check": "bunx tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@leaderboard/database": "workspace:*",
+    "@leaderboard/config": "workspace:*",
+    "@leaderboard/scraper-core": "workspace:*",
+    "yaml": "^2.7.0",
+    "gray-matter": "^4.0.3"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
