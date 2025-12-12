@@ -1,0 +1,25 @@
+{
+  "name": "@leaderboard/scraper-github",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "scrape": "bun run src/index.ts",
+    "dev": "bun run --watch src/index.ts",
+    "build": "bun build src/index.ts --outdir dist --target node",
+    "clean": "rm -rf dist",
+    "check": "bunx tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@leaderboard/database": "workspace:*",
+    "@leaderboard/config": "workspace:*",
+    "@leaderboard/scraper-core": "workspace:*",
+    "@octokit/rest": "^21.0.2"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}

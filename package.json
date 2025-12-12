@@ -1,0 +1,31 @@
+{
+  "name": "leaderboard-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "packages/scrapers/*"
+  ],
+  "scripts": {
+    "dev": "bun --filter '*' dev",
+    "build": "bun --filter '*' build",
+    "lint": "bun --filter '*' lint",
+    "test": "bun --filter '*' test",
+    "check": "bun --filter '*' check",
+    "clean": "bun --filter '*' clean && rm -rf node_modules",
+    "scrape:github": "bun run --filter @leaderboard/scraper-github scrape",
+    "scrape:slack": "bun run --filter @leaderboard/scraper-slack scrape",
+    "scrape:all": "bun --filter '@leaderboard/scraper-*' scrape",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json}\""
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
+

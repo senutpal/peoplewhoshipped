@@ -1,0 +1,33 @@
+{
+  "name": "@leaderboard/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bunx --bun next dev --turbopack",
+    "build": "bunx --bun next build",
+    "start": "bunx --bun next start",
+    "lint": "bunx --bun next lint",
+    "check": "bunx tsc --noEmit -p tsconfig.json",
+    "clean": "rm -rf .next out"
+  },
+  "dependencies": {
+    "@leaderboard/database": "workspace:*",
+    "@leaderboard/config": "workspace:*",
+    "@leaderboard/ui": "workspace:*",
+    "next": "^15.1.3",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/react": "^19.0.1",
+    "@types/react-dom": "^19.0.2",
+    "eslint": "^9.17.0",
+    "eslint-config-next": "^15.1.3"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
+

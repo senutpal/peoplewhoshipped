@@ -1,0 +1,26 @@
+{
+  "name": "@leaderboard/scraper-core",
+  "version": "0.0.0",
+  "private": true,
+  "module": "./src/index.ts",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "dev": "echo 'Scraper core package ready'",
+    "build": "bun build src/index.ts --outdir dist --target node",
+    "clean": "rm -rf dist",
+    "check": "bunx tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@leaderboard/database": "workspace:*",
+    "@leaderboard/config": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "name": "@leaderboard/ui",
+  "version": "0.0.0",
+  "private": true,
+  "module": "./src/index.ts",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./components": "./src/components/index.ts"
+  },
+  "scripts": {
+    "dev": "echo 'UI package ready'",
+    "build": "bun build src/index.ts --outdir dist --target browser",
+    "clean": "rm -rf dist",
+    "check": "bunx tsc --noEmit -p tsconfig.json",
+    "lint": "echo 'No lint configured'"
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/react": "^19.0.1",
+    "@types/react-dom": "^19.0.2"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0",
+    "typescript": "^5"
+  }
+}
+
