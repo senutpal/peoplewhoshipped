@@ -15,7 +15,8 @@
   },
   "dependencies": {
     "@leaderboard/database": "workspace:*",
-    "@leaderboard/config": "workspace:*"
+    "@leaderboard/config": "workspace:*",
+    "date-fns": "^4.1.0"
   },
   "devDependencies": {
     "@types/bun": "latest"

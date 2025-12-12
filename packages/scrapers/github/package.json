@@ -14,7 +14,8 @@
     "@leaderboard/database": "workspace:*",
     "@leaderboard/config": "workspace:*",
     "@leaderboard/scraper-core": "workspace:*",
-    "@octokit/rest": "^21.0.2"
+    "octokit": "^4.1.2",
+    "date-fns": "^4.1.0"
   },
   "devDependencies": {
     "@types/bun": "latest"
