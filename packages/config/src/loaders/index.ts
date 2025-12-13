@@ -180,7 +180,7 @@ export function loadDatabaseConfig(): DatabaseConfig {
  *
  * Optional (General):
  * - `LEADERBOARD_DATA_PATH` - Path for exported data
- * - `SCRAPE_DAYS` - Number of days to scrape (default: 1)
+ * - `SCRAPE_DAYS` - Number of days to scrape (default: 7)
  *
  * @example
  * ```typescript
@@ -208,6 +208,6 @@ export function loadConfig(): LeaderboardConfig {
     slack: loadSlackConfig(),
     database: loadDatabaseConfig(),
     leaderboardDataPath: process.env.LEADERBOARD_DATA_PATH,
-    scrapeDays: getOptionalEnvInt("SCRAPE_DAYS", 14),
+    scrapeDays: getOptionalEnvInt("SCRAPE_DAYS", 7),
   };
 }

@@ -26,7 +26,7 @@
  * - `SLACK_API_TOKEN`: Slack Bot User OAuth Token
  * - `SLACK_CHANNEL`: Slack channel ID
  * - `LEADERBOARD_DATA_PATH`: Path for exported data
- * - `SCRAPE_DAYS`: Number of days to scrape (default: 1)
+ * - `SCRAPE_DAYS`: Number of days to scrape (default: 7)
  *
  * ## Usage
  *

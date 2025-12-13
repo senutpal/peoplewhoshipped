@@ -23,7 +23,7 @@
  *
  * Optional environment variables:
  * - `LEADERBOARD_DATA_PATH`: Path for data exports
- * - `SCRAPE_DAYS`: Number of days to look back when scraping (default: 1)
+ * - `SCRAPE_DAYS`: Number of days to look back when scraping (default: 7)
  *
  * ## Usage
  *

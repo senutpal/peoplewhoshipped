@@ -24,7 +24,7 @@ Set the following environment variables:
 | `SLACK_API_TOKEN` | ❌ | Slack Bot User OAuth Token | `xoxb-xxxxxxxxxxxx` |
 | `SLACK_CHANNEL` | ❌ | Slack channel ID | `C12345678` |
 | `LEADERBOARD_DATA_PATH` | ❌ | Path for exported data | `./data/exports` |
-| `SCRAPE_DAYS` | ❌ | Days to scrape (default: 1) | `7` |
+| `SCRAPE_DAYS` | ❌ | Days to scrape (default: 7) | `7` |
 
 ## Usage
 

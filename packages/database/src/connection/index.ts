@@ -39,7 +39,7 @@ export interface DatabaseConfig {
    * Number of days to look back when scraping.
    * Set via `SCRAPE_DAYS` environment variable.
    *
-   * @default 1
+   * @default 7
    */
   scrapeDays: number;
 }
@@ -74,7 +74,7 @@ export function getConfig(): DatabaseConfig {
   return {
     dataPath: process.env.PGLITE_DB_PATH,
     leaderboardDataPath: process.env.LEADERBOARD_DATA_PATH,
-    scrapeDays: process.env.SCRAPE_DAYS ? parseInt(process.env.SCRAPE_DAYS) : 1,
+    scrapeDays: process.env.SCRAPE_DAYS ? parseInt(process.env.SCRAPE_DAYS) : 7,
   };
 }
 

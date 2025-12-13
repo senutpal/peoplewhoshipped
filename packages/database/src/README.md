@@ -29,7 +29,7 @@ bun add @leaderboard/database
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `LEADERBOARD_DATA_PATH` | Path for data exports | - |
-| `SCRAPE_DAYS` | Days to look back when scraping | `1` |
+| `SCRAPE_DAYS` | Days to look back when scraping | `7` |
 
 ## Quick Start
 
