@@ -60,8 +60,6 @@ yarn-error.log*
 .env*.local
 .env
 
-# Vercel
-.vercel
 
 # Turbo
 .turbo
