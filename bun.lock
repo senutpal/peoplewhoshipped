@@ -113,6 +113,19 @@
         "typescript": "^5",
       },
     },
+    "packages/scrapers/roles": {
+      "name": "@leaderboard/scraper-roles",
+      "version": "0.0.0",
+      "dependencies": {
+        "@leaderboard/database": "workspace:*",
+      },
+      "devDependencies": {
+        "@types/bun": "latest",
+      },
+      "peerDependencies": {
+        "typescript": "^5",
+      },
+    },
     "packages/scrapers/slack": {
       "name": "@leaderboard/scraper-slack",
       "version": "0.0.0",
@@ -146,6 +159,21 @@
       "peerDependencies": {
         "react": "^18.0.0 || ^19.0.0",
         "react-dom": "^18.0.0 || ^19.0.0",
+        "typescript": "^5",
+      },
+    },
+    "packages/utils": {
+      "name": "@leaderboard/utils",
+      "version": "0.0.1",
+      "dependencies": {
+        "clsx": "^2.1.1",
+        "date-fns": "^4.1.0",
+        "tailwind-merge": "^2.6.0",
+      },
+      "devDependencies": {
+        "typescript": "^5.7.2",
+      },
+      "peerDependencies": {
         "typescript": "^5",
       },
     },
@@ -245,9 +273,13 @@
 
     "@leaderboard/scraper-github": ["@leaderboard/scraper-github@workspace:packages/scrapers/github"],
 
+    "@leaderboard/scraper-roles": ["@leaderboard/scraper-roles@workspace:packages/scrapers/roles"],
+
     "@leaderboard/scraper-slack": ["@leaderboard/scraper-slack@workspace:packages/scrapers/slack"],
 
     "@leaderboard/ui": ["@leaderboard/ui@workspace:packages/ui"],
+
+    "@leaderboard/utils": ["@leaderboard/utils@workspace:packages/utils"],
 
     "@leaderboard/web": ["@leaderboard/web@workspace:apps/web"],
 
@@ -490,6 +522,8 @@
     "chalk": ["chalk@4.1.2", "", { "dependencies": { "ansi-styles": "^4.1.0", "supports-color": "^7.1.0" } }, "sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA=="],
 
     "client-only": ["client-only@0.0.1", "", {}, "sha512-IV3Ou0jSMzZrd3pZ48nLkT9DA7Ag1pnPzaiQhpW7c3RbcqqzvzzVu+L8gfqMp/8IM2MQtSiqaCxrrcfu8I8rMA=="],
+
+    "clsx": ["clsx@2.1.1", "", {}, "sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA=="],
 
     "color-convert": ["color-convert@2.0.1", "", { "dependencies": { "color-name": "~1.1.4" } }, "sha512-RRECPsj7iu/xb5oKYcsFHSppFNnsj/52OVTRKb4zP5onXwVF3zVmmToNcOfGC+CRDpfK/U584fMg38ZHCaElKQ=="],
 
@@ -944,6 +978,8 @@
     "supports-color": ["supports-color@7.2.0", "", { "dependencies": { "has-flag": "^4.0.0" } }, "sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw=="],
 
     "supports-preserve-symlinks-flag": ["supports-preserve-symlinks-flag@1.0.0", "", {}, "sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w=="],
+
+    "tailwind-merge": ["tailwind-merge@2.6.0", "", {}, "sha512-P+Vu1qXfzediirmHOC3xKGAYeZtPcV9g76X+xg2FD4tYgR71ewMA35Y3sCz3zhiN/dwefRpJX0yBcgwi1fXNQA=="],
 
     "tinyglobby": ["tinyglobby@0.2.15", "", { "dependencies": { "fdir": "^6.5.0", "picomatch": "^4.0.3" } }, "sha512-j2Zq4NyQYG5XMST4cbs02Ak8iJUdxRM0XI5QyxXuZOzKOINmWurp3smXu3y5wDcJrptwpSjgXHzIQxR0omXljQ=="],
 

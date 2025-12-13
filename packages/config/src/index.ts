@@ -109,3 +109,32 @@ export {
   DEFAULT_PAGE_LIMIT,
   MAX_CONCURRENT_REQUESTS,
 } from "./constants";
+
+// =============================================================================
+// YAML Configuration
+// =============================================================================
+
+/**
+ * YAML configuration types for config.yaml files.
+ */
+export type {
+  YamlConfig,
+  OrgConfig,
+  MetaConfig,
+  RoleConfig,
+  SocialProfileConfig,
+  LeaderboardYamlConfig,
+  ScraperInstanceConfig,
+  ScraperYamlConfig,
+} from "./types/yaml";
+
+/**
+ * YAML configuration loaders and helpers.
+ */
+export {
+  getYamlConfig,
+  getYamlConfigSync,
+  clearYamlConfigCache,
+  getHiddenRoles,
+  getVisibleRoles,
+} from "./loaders/yaml";

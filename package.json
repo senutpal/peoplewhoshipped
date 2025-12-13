@@ -20,6 +20,7 @@
     "db:export": "bun run --filter @leaderboard/db-scripts export",
     "scrape:github": "bun run --filter @leaderboard/scraper-github scrape",
     "scrape:slack": "bun run --filter @leaderboard/scraper-slack scrape",
+    "scrape:roles": "bun run --filter @leaderboard/scraper-roles scrape",
     "scrape:all": "bun --filter '@leaderboard/scraper-*' scrape",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\""
   },

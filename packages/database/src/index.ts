@@ -149,3 +149,40 @@ export {
   deleteSlackEodMessages,
   getAllSlackEodMessages,
 } from "./operations/slack-eod";
+
+// =============================================================================
+// Query Operations
+// =============================================================================
+
+/**
+ * Query operations for leaderboard, contributor profiles, and activity stats.
+ */
+export {
+  getContributor,
+  listContributors,
+  getAllContributorUsernames,
+  getAllContributorsWithAvatars,
+  listActivityDefinitions,
+  getLeaderboard,
+  getRecentActivitiesGroupedByType,
+  getTopContributorsByActivity,
+  getContributorProfile,
+} from "./operations/queries";
+
+// =============================================================================
+// Query Types
+// =============================================================================
+
+/**
+ * Type definitions for query results.
+ */
+export type {
+  LeaderboardEntry,
+  ActivityWithContributor,
+  ActivityGroup,
+  ContributorActivity,
+  ContributorProfile,
+  TopContributorsByActivity,
+  ContributorWithAvatar,
+  TopContributorEntry,
+} from "./types/queries";

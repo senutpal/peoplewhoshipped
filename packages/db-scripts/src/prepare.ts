@@ -36,59 +36,58 @@ import { ALL_ACTIVITY_DEFINITIONS } from "@leaderboard/scraper-core";
  *
  * @description
  * This SQL creates the following tables:
- * - `contributors` - Registered contributors with GitHub and Slack IDs
- * - `activity_definitions` - Types of activities that can be tracked
- * - `activities` - Individual activity records linked to contributors
+ * - `contributor` - Registered contributors with username as primary identifier
+ * - `activity_definition` - Types of activities that can be tracked
+ * - `activity` - Individual activity records linked to contributors
  *
  * Also creates indexes for common query patterns.
  *
  * @internal
  */
 const SCHEMA_SQL = `
--- Contributors table
--- Stores contributor information with GitHub username as primary identifier
-CREATE TABLE IF NOT EXISTS contributors (
-  id SERIAL PRIMARY KEY,
-  github TEXT UNIQUE NOT NULL,
-  slack_user_id TEXT UNIQUE,
-  role TEXT DEFAULT 'contributor',
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- Contributor table
+-- Stores contributor information with username (GitHub username) as primary identifier
+CREATE TABLE IF NOT EXISTS contributor (
+  username                VARCHAR PRIMARY KEY,
+  name                    VARCHAR,
+  role                    VARCHAR,
+  title                   VARCHAR,
+  avatar_url              VARCHAR,
+  bio                     TEXT,
+  social_profiles         JSON,
+  joining_date            DATE,
+  meta                    JSON
 );
 
--- Activity definitions table
+-- Activity definition table
 -- Defines the types of activities (e.g., pr_merged, issue_opened)
-CREATE TABLE IF NOT EXISTS activity_definitions (
-  slug TEXT PRIMARY KEY,
-  name TEXT NOT NULL,
-  description TEXT,
-  points INTEGER DEFAULT 0,
-  ordinal INTEGER DEFAULT 0,
-  repo TEXT
+CREATE TABLE IF NOT EXISTS activity_definition (
+  slug                    VARCHAR PRIMARY KEY,
+  name                    VARCHAR NOT NULL,
+  description             TEXT NOT NULL,
+  points                  SMALLINT,
+  icon                    VARCHAR
 );
 
--- Activities table
+-- Activity table
 -- Individual activity records linked to contributors and definitions
-CREATE TABLE IF NOT EXISTS activities (
-  id SERIAL PRIMARY KEY,
-  slug TEXT UNIQUE NOT NULL,
-  contributor TEXT NOT NULL REFERENCES contributors(github),
-  activity_definition TEXT NOT NULL REFERENCES activity_definitions(slug),
-  title TEXT NOT NULL,
-  occured_at TIMESTAMP NOT NULL,
-  link TEXT,
-  text TEXT,
-  points INTEGER,
-  meta JSONB,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE IF NOT EXISTS activity (
+  slug                    VARCHAR PRIMARY KEY,
+  contributor             VARCHAR REFERENCES contributor(username) NOT NULL,
+  activity_definition     VARCHAR REFERENCES activity_definition(slug) NOT NULL,
+  title                   VARCHAR,
+  occured_at              TIMESTAMP NOT NULL,
+  link                    VARCHAR,
+  text                    TEXT,
+  points                  SMALLINT,
+  meta                    JSON
 );
 
 -- Performance indexes
 -- Optimizes common query patterns for activity retrieval
-CREATE INDEX IF NOT EXISTS idx_activities_contributor ON activities(contributor);
-CREATE INDEX IF NOT EXISTS idx_activities_definition ON activities(activity_definition);
-CREATE INDEX IF NOT EXISTS idx_activities_occured_at ON activities(occured_at);
-CREATE INDEX IF NOT EXISTS idx_contributors_slack_user_id ON contributors(slack_user_id);
+CREATE INDEX IF NOT EXISTS idx_activity_occured_at ON activity(occured_at);
+CREATE INDEX IF NOT EXISTS idx_activity_contributor ON activity(contributor);
+CREATE INDEX IF NOT EXISTS idx_activity_definition ON activity(activity_definition);
 `;
 
 // =============================================================================

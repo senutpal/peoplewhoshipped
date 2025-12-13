@@ -77,28 +77,28 @@ jobs:
       # Setup Steps
       # =========================================================================
       
-      - name: 📥 Checkout Repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 1  # Shallow clone for faster checkout
 
-      - name: 📦 Setup Bun
+      - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
-      - name: 📦 Install Dependencies
+      - name: Install Dependencies
         run: bun install
 
       # =========================================================================
       # Database Preparation
       # =========================================================================
       
-      - name: 🚦 Prepare Database
+      - name: Prepare Database
         # Creates tables: contributors, activity_definitions, activities, slack_eod_queue
         run: bun run db:prepare
 
-      - name: 📥 Import from Flat Data to Database
+      - name: Import from Flat Data to Database
         # Imports existing data from data/ directory into PGlite
         run: bun run db:import
 
@@ -106,12 +106,12 @@ jobs:
       # Data Scraping
       # =========================================================================
       
-      - name: 🔍 Scrape GitHub Data
+      - name: Scrape GitHub Data
         # Scrapes: repositories, PRs, issues, comments, commits
         # Creates activities for: pr_opened, pr_merged, pr_reviewed, issue_opened, etc.
         run: bun run scrape:github
 
-      - name: 🔍 Scrape Slack Data
+      - name: Scrape Slack Data
         # Scrapes: EOD messages from configured channel
         # Creates activities for: eod_update
         run: bun run scrape:slack
@@ -120,11 +120,11 @@ jobs:
       # Data Export & Artifact Upload
       # =========================================================================
       
-      - name: 📤 Export Data to Flat Files
+      - name: Export Data to Flat Files
         # Exports all activities and messages to JSON files in data/
         run: bun run db:export
 
-      - name: 📦 Upload Scraped Data Artifact
+      - name: Upload Scraped Data Artifact
         uses: actions/upload-artifact@v4
         with:
           name: leaderboard-data
@@ -137,12 +137,12 @@ jobs:
       # Database Artifact (for debugging)
       # =========================================================================
       
-      - name: 📤 Export SQL Dump
+      - name: Export SQL Dump
         run: |
           # Export database as SQL dump for debugging/verification
           echo "Database export completed - data saved as artifacts"
 
-      - name: 📦 Upload Database Artifact
+      - name: Upload Database Artifact
         uses: actions/upload-artifact@v4
         with:
           name: pglite-db
