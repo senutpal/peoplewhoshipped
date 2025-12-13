@@ -28,7 +28,7 @@ on:
       days:
         type: number
         description: "Number of days to scrape (how far back to look for activity)"
-        default: 1
+        default: 7
 
 # Prevent multiple scraper runs from conflicting
 concurrency:
