@@ -18,9 +18,9 @@
 name: Scraper
 
 on:
-  # Automatic schedule - runs every 12 hours
+  # Automatic schedule - runs every 2 hours
   schedule:
-    - cron: "0 */12 * * *"
+    - cron: "0 */2 * * *"
   
   # Manual trigger with optional parameters
   workflow_dispatch:
@@ -45,7 +45,7 @@ jobs:
       # Database Configuration
       # =========================================================================
       # Path where PGlite will store the database files
-      PGLITE_DB_PATH: ${{ github.workspace }}/pglite-db
+      PGLITE_DB_PATH: ${{ github.workspace }}/data/pglite
       
       # Path to the data directory for flat file storage
       LEADERBOARD_DATA_PATH: ${{ github.workspace }}/data
@@ -146,5 +146,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: pglite-db
-          path: ${{ github.workspace }}/pglite-db
+          path: ${{ github.workspace }}/data/pglite
           retention-days: 7  # Keep database snapshots for 7 days

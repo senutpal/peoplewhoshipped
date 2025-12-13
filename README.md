@@ -47,66 +47,59 @@ leaderboard/
 
 ### Prerequisites
 
-- **Bun** v1.3.4 or later — [Install Bun](https://bun.sh/docs/installation)
-- **GitHub Personal Access Token** — [Generate here](https://github.com/settings/tokens)
+- **Bun** v1.3.4+ — [Install Bun](https://bun.sh/docs/installation)
+- **GitHub Token** — [Generate here](https://github.com/settings/tokens)
 - **Slack Bot Token** (optional) — [Create Slack App](https://api.slack.com/apps)
 
-### Installation
+### Setup
 
 ```bash
-# Clone the repository
+# 1. Clone and install
 git clone https://github.com/your-org/leaderboard.git
 cd leaderboard
-
-# Install dependencies
 bun install
+
+# 2. Create pglite directory and configure environment
+mkdir data\pglite      # Windows
+mkdir -p data/pglite   # macOS/Linux
+cp .env.example .env
 ```
 
-### Configuration
+Edit `.env` with your **absolute paths**:
 
-1. Copy the environment template:
-   ```bash
-   cp .env.example .env
-   ```
+```env
+# Database path - MUST be absolute path to data/pglite folder
+# Make sure to create this directory first (see step 2 above)
+# Example: D:\VsCode\leaderboard\data\pglite (Windows)
+# Example: /home/user/leaderboard/data/pglite (Linux/Mac)
+PGLITE_DB_PATH=<your-project-path>/data/pglite
 
-2. Configure required variables in `.env`:
-   ```env
-   # Required - Database path
-   PGLITE_DB_PATH=./pglite-db
+# Data directory - MUST be absolute path to data folder  
+# Example: D:\VsCode\leaderboard\data (Windows)
+# Example: /home/user/leaderboard/data (Linux/Mac)
+LEADERBOARD_DATA_PATH=<your-project-path>/data
 
-   # Required - Data directory
-   LEADERBOARD_DATA_PATH=./data
+# GitHub (required for scraping)
+GITHUB_TOKEN=ghp_your_token
+GITHUB_ORG=CircuitVerse  # Your GitHub organization name
 
-   # GitHub configuration
-   GITHUB_TOKEN=ghp_your_token_here
-   GITHUB_ORG=your-org-name
+# Slack (optional)
+SLACK_API_TOKEN=xoxb-your-token
+SLACK_CHANNEL=C12345678
+```
 
-   # Slack configuration (optional)
-   SLACK_API_TOKEN=xoxb-your-token
-   SLACK_CHANNEL=C12345678
-
-   # Scraper settings
-   SCRAPE_DAYS=1
-   ```
-
-3. Customize `data/leaderboard/config.yaml` for your organization.
-
-### Running Locally
+### Run
 
 ```bash
-# 1. Prepare database schema
+# 3. Prepare database and import data
 bun run db:prepare
-
-# 2. Scrape data from GitHub (optional - requires GITHUB_TOKEN)
-bun run scrape:github
-
-# 3. Import flat file data into database
 bun run db:import
 
-# 4. Export static JSON for Next.js (required before build/dev)
-bun run db:prebuild-static
+# 4. (Optional) Scrape fresh data from GitHub
+bun run scrape:github
 
-# 5. Start development server
+# 5. Export static JSON and start dev server
+bun run db:prebuild-static
 cd apps/web && bun run dev
 ```
 
@@ -222,7 +215,7 @@ Optional bio text here.
 
 ## GitHub Actions Workflow
 
-The `scraper.yaml` workflow runs automatically every 12 hours:
+The `scraper.yaml` workflow runs automatically every 2 hours:
 
 1. Checkout repo & install Bun
 2. `bun run db:prepare` — Create schema
