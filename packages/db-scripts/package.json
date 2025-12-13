@@ -4,9 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "schema": "bun run src/prepare.ts",
-    "import": "bun run src/import.ts",
-    "export": "bun run src/export.ts",
+    "schema": "bun --env-file=../../.env run src/prepare.ts",
+    "import": "bun --env-file=../../.env run src/import.ts",
+    "export": "bun --env-file=../../.env run src/export.ts",
+    "prebuild-static": "bun --env-file=../../.env run src/prebuild-static-data.ts",
     "dev": "echo 'db-scripts package ready'",
     "build": "bun build src/*.ts --outdir dist --target node",
     "clean": "rm -rf dist",
@@ -15,6 +16,7 @@
   "dependencies": {
     "@leaderboard/database": "workspace:*",
     "@leaderboard/config": "workspace:*",
+    "@leaderboard/utils": "workspace:*",
     "@leaderboard/scraper-core": "workspace:*",
     "yaml": "^2.7.0",
     "gray-matter": "^4.0.3"

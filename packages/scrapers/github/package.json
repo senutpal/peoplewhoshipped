@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "scrape": "bun run src/index.ts",
-    "dev": "bun run --watch src/index.ts",
+    "scrape": "bun --env-file=../../../.env run src/index.ts",
+    "dev": "echo 'GitHub scraper ready'",
     "build": "bun build src/index.ts --outdir dist --target node",
     "clean": "rm -rf dist",
     "check": "bunx tsc --noEmit -p tsconfig.json"

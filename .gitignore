@@ -72,3 +72,5 @@ yarn-error.log*
 # PGlite Database
 pglite-db/
 db-data/
+data/pglite/
+data/static/

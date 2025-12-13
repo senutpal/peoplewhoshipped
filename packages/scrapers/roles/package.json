@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "echo 'Roles scraper ready'",
     "build": "bun build src/index.ts --outdir dist --target node",
-    "scrape": "bun run src/index.ts",
+    "scrape": "bun --env-file=../../../.env run src/index.ts",
     "clean": "rm -rf dist",
     "check": "bunx tsc --noEmit -p tsconfig.json"
   },

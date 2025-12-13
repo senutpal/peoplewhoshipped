@@ -8,6 +8,7 @@
  */
 
 import { PGlite } from "@electric-sql/pglite";
+import { resolve } from "path";
 
 // =============================================================================
 // Types
@@ -108,6 +109,8 @@ export function getConfig(): DatabaseConfig {
 export function getDb(): PGlite {
   const { dataPath } = getConfig();
 
+  console.log("[DEBUG] PGLITE_DB_PATH:", dataPath);
+
   if (!dataPath) {
     throw new Error(
       "'PGLITE_DB_PATH' environment needs to be set with a path to the database data."
@@ -116,7 +119,10 @@ export function getDb(): PGlite {
 
   if (!dbInstance) {
     // Support in-memory database for testing
-    dbInstance = dataPath === ":memory:" ? new PGlite() : new PGlite(dataPath);
+    // Normalize path for Windows compatibility
+    const normalizedPath = dataPath === ":memory:" ? dataPath : resolve(dataPath);
+    console.log("[DEBUG] Creating PGlite instance with normalized path:", normalizedPath);
+    dbInstance = dataPath === ":memory:" ? new PGlite() : new PGlite(normalizedPath);
   }
 
   return dbInstance;

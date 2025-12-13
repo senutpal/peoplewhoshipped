@@ -208,6 +208,6 @@ export function loadConfig(): LeaderboardConfig {
     slack: loadSlackConfig(),
     database: loadDatabaseConfig(),
     leaderboardDataPath: process.env.LEADERBOARD_DATA_PATH,
-    scrapeDays: getOptionalEnvInt("SCRAPE_DAYS", 1),
+    scrapeDays: getOptionalEnvInt("SCRAPE_DAYS", 14),
   };
 }

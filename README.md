@@ -94,14 +94,32 @@ bun install
 ### Running Locally
 
 ```bash
-# Prepare database schema
+# 1. Prepare database schema
 bun run db:prepare
 
-# Import existing flat file data
+# 2. Scrape data from GitHub (optional - requires GITHUB_TOKEN)
+bun run scrape:github
+
+# 3. Import flat file data into database
 bun run db:import
 
-# Start development server (Next.js)
-bun run dev
+# 4. Export static JSON for Next.js (required before build/dev)
+bun run db:prebuild-static
+
+# 5. Start development server
+cd apps/web && bun run dev
+```
+
+### Building for Production
+
+```bash
+# Full build flow (from root)
+bun install
+bun run db:prepare
+bun run scrape:github
+bun run db:import
+bun run db:prebuild-static
+cd apps/web && bunx --bun next build
 ```
 
 ---
@@ -118,6 +136,7 @@ bun run dev
 | `bun run db:prepare` | Create database schema |
 | `bun run db:import` | Import flat files → database |
 | `bun run db:export` | Export database → flat files |
+| `bun run db:prebuild-static` | Export JSON for Next.js static build |
 | `bun run scrape:github` | Scrape GitHub activity |
 | `bun run scrape:slack` | Scrape Slack EOD messages |
 | `bun run scrape:all` | Run all scrapers |

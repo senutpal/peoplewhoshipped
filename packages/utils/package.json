@@ -3,12 +3,15 @@
   "version": "0.0.1",
   "description": "Shared utilities for the leaderboard monorepo",
   "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "module": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "check": "bunx tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
     "clsx": "^2.1.1",

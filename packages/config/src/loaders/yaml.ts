@@ -54,7 +54,12 @@ export async function getYamlConfig(configPath?: string): Promise<YamlConfig> {
     return cachedConfig;
   }
 
-  const resolvedPath = configPath ?? join(process.cwd(), "config.yaml");
+  // Use LEADERBOARD_DATA_PATH if set, otherwise fall back to CWD
+  const dataPath = process.env.LEADERBOARD_DATA_PATH;
+  const resolvedPath = configPath ?? 
+    (dataPath 
+      ? join(dataPath, "leaderboard", "config.yaml") 
+      : join(process.cwd(), "config.yaml"));
 
   if (!existsSync(resolvedPath)) {
     throw new Error(`Configuration file not found: ${resolvedPath}`);
@@ -150,7 +155,12 @@ export function getYamlConfigSync(configPath?: string): YamlConfig {
     return cachedConfig;
   }
 
-  const resolvedPath = configPath ?? join(process.cwd(), "config.yaml");
+  // Use LEADERBOARD_DATA_PATH if set, otherwise fall back to CWD
+  const dataPath = process.env.LEADERBOARD_DATA_PATH;
+  const resolvedPath = configPath ?? 
+    (dataPath 
+      ? join(dataPath, "leaderboard", "config.yaml") 
+      : join(process.cwd(), "config.yaml"));
 
   if (!existsSync(resolvedPath)) {
     throw new Error(`Configuration file not found: ${resolvedPath}`);
