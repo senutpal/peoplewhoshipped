@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "bunx --bun next dev --turbopack",
     "build": "bunx --bun next build",
-    "start": "bunx --bun next start",
+    "start": "npx -y serve out",
     "lint": "bunx --bun next lint",
     "check": "bunx tsc --noEmit -p tsconfig.json",
     "clean": "rm -rf .next out"
