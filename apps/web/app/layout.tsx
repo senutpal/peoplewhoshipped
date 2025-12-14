@@ -76,7 +76,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${dmSans.variable} ${dmMono.variable} antialiased`}
+        className={`${dmSans.className} ${dmMono.variable} antialiased`}
       >
         <ThemeProvider
           attribute="class"

@@ -1,6 +1,9 @@
 /**
  * @fileoverview ActivityTimelineItem component for individual activity display.
  * @module @leaderboard/web/components/activity/ActivityTimelineItem
+ *
+ * @security This component uses dangerouslySetInnerHTML for activity text.
+ * Ensure activity.text is sanitized server-side before display.
  */
 
 import { ExternalLink } from "lucide-react";
@@ -11,8 +14,11 @@ import { RelativeTime } from "../shared/RelativeTime";
  * Props for the ActivityTimelineItem component.
  */
 export interface ActivityTimelineItemProps {
-  /** The activity to display */
-  activity: ContributorActivity;
+  /**
+   * The activity to display.
+   * @security activity.text must be sanitized HTML to prevent XSS.
+   */
+  readonly activity: ContributorActivity;
 }
 
 /**
@@ -57,7 +63,7 @@ export function ActivityTimelineItem({
                 >
                   {activity.title}
                 </a>
-                <ExternalLink className="size-3.5 text-muted-foreground/50" />
+                <ExternalLink className="size-3.5 text-muted-foreground/50" aria-hidden="true" />
               </span>
             ) : (
               activity.title

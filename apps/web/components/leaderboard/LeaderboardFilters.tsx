@@ -20,17 +20,17 @@ import {
  */
 export interface LeaderboardFiltersProps {
   /** Current search query */
-  searchQuery: string;
+  readonly searchQuery: string;
   /** Callback when search query changes */
-  onSearchChange: (query: string) => void;
+  readonly onSearchChange: (query: string) => void;
   /** Available roles for filtering */
-  roles: string[];
+  readonly roles: readonly string[];
   /** Currently selected roles */
-  selectedRoles: Set<string>;
+  readonly selectedRoles: ReadonlySet<string>;
   /** Callback to toggle a role */
-  onRoleToggle: (role: string) => void;
+  readonly onRoleToggle: (role: string) => void;
   /** Callback to clear all filters */
-  onClearFilters: () => void;
+  readonly onClearFilters: () => void;
 }
 
 /**

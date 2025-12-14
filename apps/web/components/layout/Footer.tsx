@@ -10,7 +10,7 @@ import type { YamlConfig } from "@leaderboard/config";
  */
 export interface FooterProps {
   /** Configuration object with org info */
-  config: YamlConfig;
+  readonly config: Readonly<YamlConfig>;
 }
 
 /**

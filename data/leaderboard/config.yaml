@@ -15,16 +15,16 @@
 
 org:
   # Organization display name
-  name: Your Organization
+  name: CircuitVerse
   
   # Short description shown in the header/footer
-  description: Your organization description here.
+  description: CircuitVerse is a free, open-source platform which allows users to construct digital logic circuits online.
   
   # Main website URL
-  url: https://your-org.example.com
+  url: https://circuitverse.org
   
   # Logo URL (SVG or PNG recommended, min 128x128)
-  logo_url: https://your-org.example.com/logo.svg
+  logo_url: https://avatars.githubusercontent.com/u/42944450?s=200&v=4
   
   # When to start tracking contributions (YYYY-MM-DD format)
   # Activities before this date will not appear on the leaderboard

@@ -16,7 +16,7 @@ export type LeaderboardPeriod = "week" | "month" | "year";
  */
 export interface PeriodTabsProps {
   /** Currently selected period */
-  currentPeriod: LeaderboardPeriod;
+  readonly currentPeriod: LeaderboardPeriod;
 }
 
 /**
@@ -36,11 +36,14 @@ export function PeriodTabs({
   const periods: LeaderboardPeriod[] = ["week", "month", "year"];
 
   return (
-    <div className="flex gap-2 mb-8 border-b">
+    <nav className="flex gap-2 mb-8 border-b" role="tablist" aria-label="Leaderboard time period">
       {periods.map((period) => (
         <Link
           key={period}
           href={`/leaderboard/${period}`}
+          role="tab"
+          aria-selected={currentPeriod === period}
+          aria-current={currentPeriod === period ? "page" : undefined}
           className={cn(
             "px-4 py-2 font-medium transition-colors border-b-2 capitalize",
             currentPeriod === period
@@ -51,6 +54,6 @@ export function PeriodTabs({
           {period}
         </Link>
       ))}
-    </div>
+    </nav>
   );
 }

@@ -8,7 +8,7 @@
 import { useEffect, useState } from "react";
 import { Monitor, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
-import { cn } from "@leaderboard/ui"; // Assuming a utility exists, or we use a local helper
+import { cn } from "@leaderboard/ui";
 
 /**
  * High-precision theme controller with sliding localized feedback and etched-glass aesthetics.

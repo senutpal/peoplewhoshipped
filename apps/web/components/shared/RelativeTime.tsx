@@ -13,9 +13,9 @@ import { formatTimeAgo } from "@leaderboard/utils";
  */
 export interface RelativeTimeProps {
   /** The date to display relative to now */
-  date: Date;
+  readonly date: Date;
   /** Optional CSS class name */
-  className?: string;
+  readonly className?: string;
 }
 
 /**
@@ -46,7 +46,12 @@ export function RelativeTime({
   }, [date]);
 
   return (
-    <time dateTime={date.toISOString()} className={className}>
+    <time
+      dateTime={date.toISOString()}
+      className={className}
+      title={date.toLocaleString()}
+      aria-label={`${timeAgo}, on ${date.toLocaleDateString()}`}
+    >
       {timeAgo}
     </time>
   );

@@ -16,7 +16,7 @@ export default async function PeoplePage(): Promise<React.ReactElement> {
   const contributors: ContributorWithAvatar[] = await getAllContributorsWithAvatars();
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-8 py-8 mt-24">
       <div className="mb-8">
         <h1 className="text-4xl font-bold mb-2">People</h1>
         <p className="text-muted-foreground">

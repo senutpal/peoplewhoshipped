@@ -5,6 +5,9 @@
 
 @import "tailwindcss";
 
+/* Configure Tailwind v4 to use class-based dark mode (for next-themes) */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* =============================================================================
    Theme CSS Variables
    ============================================================================= */
@@ -152,5 +155,30 @@
   to {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+/* =============================================================================
+   Accessibility: Reduced Motion
+   ============================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* =============================================================================
+   Focus Visible Utilities
+   ============================================================================= */
+
+@layer utilities {
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
   }
 }

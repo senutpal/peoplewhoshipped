@@ -13,7 +13,7 @@ import type { TopContributorsByActivity } from "@leaderboard/database";
  */
 export interface TopContributorsSidebarProps {
   /** Top contributors grouped by activity type */
-  topByActivity: TopContributorsByActivity;
+  readonly topByActivity: Readonly<TopContributorsByActivity>;
 }
 
 /**
@@ -37,7 +37,7 @@ export function TopContributorsSidebar({
   }
 
   return (
-    <div className="hidden xl:block w-80 shrink-0">
+    <aside className="hidden xl:block w-80 shrink-0" aria-label="Top contributors by activity type">
       <h2 className="text-xl font-bold mb-6">Top Contributors</h2>
       <div className="space-y-4">
         {activityEntries.map(([activityName, contributors]) => (
@@ -90,6 +90,6 @@ export function TopContributorsSidebar({
           </div>
         ))}
       </div>
-    </div>
+    </aside>
   );
 }

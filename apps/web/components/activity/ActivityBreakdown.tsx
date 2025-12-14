@@ -236,7 +236,7 @@ export function ActivityBreakdown({
             </div>
 
             {/* Legend with Trend Charts */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1  gap-3">
               {entries.map(([activityName, data], index) => {
                 const percentage = (data.count / totalActivities) * 100;
                 const trendData = activityTrendData[activityName] || [];

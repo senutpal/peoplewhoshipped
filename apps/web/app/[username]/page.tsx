@@ -93,11 +93,8 @@ export default async function ContributorPage({
   }
 
   const activityGraphData = generateActivityGraphData(activityByDate, 365);
-
-  // Convert bio markdown to HTML
   const bioHtml = contributor.bio ? await marked.parse(contributor.bio) : null;
 
-  // Calculate activity breakdown
   const activityBreakdown = activities.reduce((acc, activity) => {
     const key = activity.activity_name;
     if (!acc[key]) {
@@ -108,7 +105,6 @@ export default async function ContributorPage({
     return acc;
   }, {} as Record<string, { count: number; points: number }>);
 
-  // Prepare data for components
   const activitiesForGraph = activities.map((a) => ({
     activity_definition_name: a.activity_name,
     occured_at: a.occured_at,
@@ -121,58 +117,101 @@ export default async function ContributorPage({
   }));
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Profile Header */}
-      <ContributorHeader
-        contributor={contributor}
-        bioHtml={bioHtml}
-        socialProfiles={config.leaderboard.social_profiles}
-      />
+    <main className="min-h-screen w-full bg-[#FAFAFA] dark:bg-black text-zinc-900 dark:text-zinc-100 antialiased selection:bg-emerald-500/20 selection:text-emerald-900 dark:selection:text-emerald-50 mt-16">
 
-      {/* Stats Cards */}
-      <StatsCards
-        totalPoints={totalPoints}
-        totalActivities={activities.length}
-        activityTypes={Object.keys(activityBreakdown).length}
-      />
+      <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+          {/* Left Column: Profile & Breakdown (Sticky on Desktop) */}
+          <div className="lg:col-span-5 lg:space-y-8">
+            <div className="sticky top-24 space-y-8">
+              {/* Profile Card */}
+              <section className="overflow-hidden rounded-3xl border border-zinc-200 bg-white p-1 shadow-sm transition-all dark:border-zinc-800 dark:bg-zinc-900">
+                <div className="rounded-[20px] bg-zinc-50/50 p-6 dark:bg-black/40">
+                  <ContributorHeader
+                    contributor={contributor}
+                    bioHtml={bioHtml}
+                    socialProfiles={config.leaderboard.social_profiles}
+                  />
+                </div>
+              </section>
 
-      {/* Activity Overview */}
-      <div className="rounded-lg border bg-card mb-8">
-        <div className="p-6 border-b">
-          <h2 className="text-xl font-semibold">Activity Overview</h2>
-          <p className="text-sm text-muted-foreground">
-            {activities.length} contributions in the last year
-          </p>
+              {/* Activity Breakdown Card */}
+              <section className="hidden lg:block overflow-hidden rounded-3xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+                <div className="border-b border-zinc-100 px-6 py-4 dark:border-zinc-800">
+                  <h3 className="text-sm font-semibold text-zinc-900 dark:text-white">
+                    Distribution
+                  </h3>
+                </div>
+                <div className="p-6">
+                  <ActivityBreakdown activities={activitiesForBreakdown} />
+                </div>
+              </section>
+            </div>
+          </div>
+
+          {/* Right Column: Stats, Graph, Timeline */}
+          <div className="space-y-8 lg:col-span-7">
+            {/* Stats Row */}
+            <section className="grid grid-cols-1 gap-4 ">
+              <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+              <StatsCards
+                  totalPoints={totalPoints}
+                  totalActivities={activities.length}
+                  activityTypes={Object.keys(activityBreakdown).length}
+                />
+              </div>
+            </section>
+
+            {/* Activity Graph Section */}
+            <section className="overflow-hidden rounded-3xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+              <div className="flex items-center justify-between border-b border-zinc-100 px-8 py-6 dark:border-zinc-800">
+                <div>
+                  <h2 className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-white">
+                    Contribution History
+                  </h2>
+                  <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                    {activities.length} contributions in the last year
+                  </p>
+                </div>
+              </div>
+              <div className="p-8">
+                <ActivityGraph
+                  data={activityGraphData}
+                  activities={activitiesForGraph}
+                  activityDefinitions={activityDefinitions}
+                />
+              </div>
+            </section>
+
+            {/* Mobile-only Breakdown (Visible only on small screens) */}
+            <section className="lg:hidden overflow-hidden rounded-3xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+              <div className="border-b border-zinc-100 px-6 py-4 dark:border-zinc-800">
+                <h3 className="text-sm font-semibold text-zinc-900 dark:text-white">
+                  Distribution
+                </h3>
+              </div>
+              <div className="p-6">
+                <ActivityBreakdown activities={activitiesForBreakdown} />
+              </div>
+            </section>
+
+            {/* Timeline Section */}
+            <section className="rounded-3xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+              <div className="border-b border-zinc-100 px-8 py-6 dark:border-zinc-800">
+                <h2 className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-white">
+                  Recent Activity
+                </h2>
+              </div>
+              <div className="p-4">
+                <ActivityTimeline
+                  activities={activities}
+                  activityDefinitions={activityDefinitions}
+                />
+              </div>
+            </section>
+          </div>
         </div>
-        <div className="p-6">
-          <ActivityGraph
-            data={activityGraphData}
-            activities={activitiesForGraph}
-            activityDefinitions={activityDefinitions}
-          />
-        </div>
       </div>
-
-      {/* Activity Breakdown */}
-      <div className="mb-8">
-        <ActivityBreakdown activities={activitiesForBreakdown} />
-      </div>
-
-      {/* Activity Timeline */}
-      <ActivityTimeline
-        activities={activities}
-        activityDefinitions={activityDefinitions}
-      />
-
-      {/* Back to Leaderboard */}
-      <div className="mt-8 text-center">
-        <Link
-          href="/leaderboard"
-          className="text-sm text-primary hover:underline"
-        >
-          ← Back to Leaderboard
-        </Link>
-      </div>
-    </div>
+    </main>
   );
 }

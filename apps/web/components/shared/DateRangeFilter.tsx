@@ -5,13 +5,14 @@
 
 "use client";
 
-import { Calendar } from "lucide-react";
+import { Calendar, X } from "lucide-react";
 import {
   Button,
   Popover,
   PopoverContent,
   PopoverTrigger,
   Input,
+  cn,
 } from "@leaderboard/ui";
 
 /**
@@ -19,15 +20,15 @@ import {
  */
 export interface DateRangeFilterProps {
   /** Start date value (YYYY-MM-DD format) */
-  startDate: string;
+  readonly startDate: string;
   /** End date value (YYYY-MM-DD format) */
-  endDate: string;
+  readonly endDate: string;
   /** Callback when start date changes */
-  onStartDateChange: (date: string) => void;
+  readonly onStartDateChange: (date: string) => void;
   /** Callback when end date changes */
-  onEndDateChange: (date: string) => void;
+  readonly onEndDateChange: (date: string) => void;
   /** Optional ID prefix for form elements */
-  idPrefix?: string;
+  readonly idPrefix?: string;
 }
 
 /**
@@ -35,20 +36,6 @@ export interface DateRangeFilterProps {
  *
  * @param props - Component props
  * @returns DateRangeFilter component
- *
- * @example
- * ```tsx
- * const [startDate, setStartDate] = useState("");
- * const [endDate, setEndDate] = useState("");
- *
- * <DateRangeFilter
- *   startDate={startDate}
- *   endDate={endDate}
- *   onStartDateChange={setStartDate}
- *   onEndDateChange={setEndDate}
- *   idPrefix="timeline"
- * />
- * ```
  */
 export function DateRangeFilter({
   startDate,
@@ -62,48 +49,65 @@ export function DateRangeFilter({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="h-8">
-          <Calendar className="h-4 w-4 mr-2" />
-          Date Range
-          {hasDateFilter && (
-            <span className="ml-1 px-1.5 py-0.5 text-xs rounded-full bg-primary text-primary-foreground">
-              •
-            </span>
+        <Button 
+          variant="outline" 
+          size="icon" 
+          className={cn(
+            "h-8 w-8 rounded-full border border-zinc-200 bg-transparent text-zinc-500 hover:text-zinc-900 dark:border-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-50 transition-colors",
+            hasDateFilter && "border-emerald-500/50 text-emerald-600 bg-emerald-50/50 dark:bg-emerald-950/30 dark:text-emerald-400"
           )}
+        >
+          <Calendar className="h-4 w-4" />
+          <span className="sr-only">Filter dates</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80" align="end">
+      <PopoverContent className="w-80 p-4 bg-background" align="end">
         <div className="space-y-4">
-          <h4 className="font-medium text-sm">Filter by Date Range</h4>
-          <div className="grid gap-4">
-            <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <h4 className="font-medium text-sm text-zinc-900 dark:text-zinc-100">Date Range</h4>
+            {hasDateFilter && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-auto p-0 text-xs text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+                onClick={() => {
+                  onStartDateChange("");
+                  onEndDateChange("");
+                }}
+              >
+                Reset
+              </Button>
+            )}
+          </div>
+          <div className="grid gap-3">
+            <div className="space-y-1.5">
               <label
                 htmlFor={`${idPrefix}-start-date`}
-                className="text-sm font-medium"
+                className="text-xs font-medium text-zinc-500 dark:text-zinc-400"
               >
-                Start Date
+                Start
               </label>
               <Input
                 id={`${idPrefix}-start-date`}
                 type="date"
                 value={startDate}
                 onChange={(e) => onStartDateChange(e.target.value)}
-                className="h-9"
+                className="h-9 font-mono text-sm"
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <label
                 htmlFor={`${idPrefix}-end-date`}
-                className="text-sm font-medium"
+                className="text-xs font-medium text-zinc-500 dark:text-zinc-400"
               >
-                End Date
+                End
               </label>
               <Input
                 id={`${idPrefix}-end-date`}
                 type="date"
                 value={endDate}
                 onChange={(e) => onEndDateChange(e.target.value)}
-                className="h-9"
+                className="h-9 font-mono text-sm"
               />
             </div>
           </div>

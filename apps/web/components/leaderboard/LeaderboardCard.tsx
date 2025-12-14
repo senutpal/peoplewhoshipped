@@ -14,13 +14,13 @@ import { ActivityTrendChart } from "../activity/ActivityTrendChart";
  */
 export interface LeaderboardCardProps {
   /** Leaderboard entry data */
-  entry: LeaderboardEntry;
+  readonly entry: LeaderboardEntry;
   /** Rank position (1-indexed) */
-  rank: number;
+  readonly rank: number;
   /** Start date for trend chart */
-  startDate: Date;
+  readonly startDate: Date;
   /** End date for trend chart */
-  endDate: Date;
+  readonly endDate: Date;
 }
 
 /**
@@ -32,14 +32,14 @@ export interface LeaderboardCardProps {
 function getRankIcon(rank: number): React.ReactNode {
   if (rank === 1) {
     return (
-      <Trophy className="h-6 w-6 text-yellow-500" aria-label="1st place" />
+      <Trophy className="h-6 w-6 text-yellow-500" aria-hidden="true" role="img" />
     );
   }
   if (rank === 2) {
-    return <Medal className="h-6 w-6 text-gray-400" aria-label="2nd place" />;
+    return <Medal className="h-6 w-6 text-gray-400" aria-hidden="true" role="img" />;
   }
   if (rank === 3) {
-    return <Medal className="h-6 w-6 text-amber-600" aria-label="3rd place" />;
+    return <Medal className="h-6 w-6 text-amber-600" aria-hidden="true" role="img" />;
   }
   return null;
 }
@@ -77,9 +77,13 @@ export function LeaderboardCard({
     >
       <div className="flex items-center gap-6">
         {/* Rank */}
-        <div className="flex items-center justify-center size-12 shrink-0">
+        <div
+          className="flex items-center justify-center size-12 shrink-0"
+          aria-label={`Rank ${rank}`}
+          role="text"
+        >
           {getRankIcon(rank) || (
-            <span className="text-2xl font-bold text-muted-foreground">
+            <span className="text-2xl font-bold text-muted-foreground" aria-hidden="true">
               {rank}
             </span>
           )}

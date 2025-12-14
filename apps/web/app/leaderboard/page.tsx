@@ -16,7 +16,7 @@ export default function LeaderboardPage(): React.ReactElement {
   return (
     <>
       <meta httpEquiv="refresh" content="0;url=/leaderboard/week" />
-      <div className="container mx-auto px-4 py-8 text-center">
+      <div className="container mx-auto px-4 py-8 mt-36 text-center">
         <p className="text-muted-foreground">
           Redirecting to weekly leaderboard...
         </p>
