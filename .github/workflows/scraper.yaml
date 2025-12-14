@@ -18,9 +18,9 @@
 name: Scraper
 
 on:
-  # Automatic schedule - runs every 2 hours
+  # Automatic schedule - runs twice daily at 8 AM and 2 PM IST
   schedule:
-    - cron: "0 */2 * * *"
+    - cron: "30 2,8 * * *"
   
   # Manual trigger with optional parameters
   workflow_dispatch:
@@ -51,7 +51,7 @@ jobs:
       LEADERBOARD_DATA_PATH: ${{ github.workspace }}/data
       
       # Number of days to scrape (from workflow input or default)
-      SCRAPE_DAYS: ${{ inputs.days || 1 }}
+      SCRAPE_DAYS: ${{ inputs.days || 7 }}
       
       # =========================================================================
       # GitHub Scraper Configuration
