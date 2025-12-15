@@ -72,11 +72,11 @@ export async function importSlackEodMessages(dataPath: string): Promise<number> 
 
     if (messages.length > 0) {
       await addSlackEodMessages(messages);
-      console.log(`   ✅ Imported ${messages.length} Slack EOD messages`);
+      console.log(`Imported ${messages.length} Slack EOD messages`);
     }
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") {
-      console.log("   ⚠️  No Slack EOD messages directory found, skipping...");
+      console.log("No Slack EOD messages directory found, skipping...");
     } else {
       throw error;
     }

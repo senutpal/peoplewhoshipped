@@ -9,7 +9,7 @@
 import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { join } from "path";
 import {
-  getDb,
+  initDb,
   getAllContributorUsernames,
   getAllContributorsWithAvatars,
   getContributorProfile,
@@ -54,7 +54,7 @@ const PERIODS = ["week", "month", "year"] as const;
  * Export all static data needed for Next.js pages.
  */
 export async function exportStaticData(outputDir: string): Promise<void> {
-  console.log(`📦 Exporting static data to: ${outputDir}`);
+  console.log(`Exporting static data to: ${outputDir}`);
 
   // Ensure output directory exists
   const staticDir = join(outputDir, "static");
@@ -67,31 +67,31 @@ export async function exportStaticData(outputDir: string): Promise<void> {
     mkdirSync(profilesDir, { recursive: true });
   }
 
-  // Ensure database is initialized
-  getDb();
+  // Ensure database is initialized (waits for WASM to be ready)
+  await initDb();
 
   // Get config
   const config = getYamlConfigSync();
   const topContributorsConfig = config.leaderboard.top_contributors || [];
 
   // 1. Export usernames
-  console.log("  📝 Exporting usernames...");
+  console.log("Exporting usernames...");
   const usernames = await getAllContributorUsernames();
   writeFileSync(join(staticDir, "usernames.json"), JSON.stringify(usernames, null, 2));
   console.log(`     Found ${usernames.length} contributors`);
 
   // 2. Export activity definitions
-  console.log("  📋 Exporting activity definitions...");
+  console.log("Exporting activity definitions...");
   const activityDefinitions = await listActivityDefinitions();
   writeFileSync(join(staticDir, "activity-definitions.json"), JSON.stringify(activityDefinitions, null, 2));
 
   // 3. Export people page data
-  console.log("  👥 Exporting people data...");
+  console.log("Exporting people data...");
   const people = await getAllContributorsWithAvatars(getHiddenRoles(config));
   writeFileSync(join(staticDir, "people.json"), JSON.stringify(people, null, 2));
 
   // 4. Export recent activities for home page
-  console.log("  🏠 Exporting recent activities...");
+  console.log("Exporting recent activities...");
   const recentActivities = await getRecentActivitiesGroupedByType(7);
   // Serialize dates
   const serializedActivities = recentActivities.map(group => ({
@@ -104,7 +104,7 @@ export async function exportStaticData(outputDir: string): Promise<void> {
   writeFileSync(join(staticDir, "recent-activities.json"), JSON.stringify(serializedActivities, null, 2));
 
   // 5. Export leaderboard data for each period
-  console.log("  🏆 Exporting leaderboard data...");
+  console.log("Exporting leaderboard data...");
   for (const period of PERIODS) {
     const { startDate, endDate } = getDateRange(period);
     const [entries, topByActivity] = await Promise.all([
@@ -124,7 +124,7 @@ export async function exportStaticData(outputDir: string): Promise<void> {
   }
 
   // 6. Export individual contributor profiles
-  console.log("  👤 Exporting contributor profiles...");
+  console.log("Exporting contributor profiles...");
   for (const username of usernames) {
     const profile = await getContributorProfile(username);
     
@@ -139,9 +139,9 @@ export async function exportStaticData(outputDir: string): Promise<void> {
     
     writeFileSync(join(profilesDir, `${username}.json`), JSON.stringify(serializedProfile, null, 2));
   }
-  console.log(`     Exported ${usernames.length} profiles`);
+  console.log(`Exported ${usernames.length} profiles`);
 
-  console.log("\n✅ Static data export completed!");
+  console.log("Static data export completed!");
 }
 
 // =============================================================================
@@ -154,7 +154,7 @@ if (import.meta.main) {
   exportStaticData(dataPath)
     .then(() => process.exit(0))
     .catch((error) => {
-      console.error("❌ Failed to export static data:", error);
+      console.error("Failed to export static data:", error);
       process.exit(1);
     });
 }

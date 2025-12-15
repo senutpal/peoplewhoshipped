@@ -70,21 +70,21 @@ export { exportSlackEodMessages } from "./services/eod-exporter";
  */
 export async function exportData(): Promise<void> {
   const dataPath = getDataPath();
-  console.log(`📤 Exporting data to: ${dataPath}`);
+  console.log(`Exporting data to: ${dataPath}`);
 
   // Ensure database is initialized
   getDb();
 
-  console.log("\n🐙 Exporting GitHub activities...");
+  console.log("\nExporting GitHub activities...");
   await exportGitHubActivities(dataPath);
 
-  console.log("\n💬 Exporting Slack activities...");
+  console.log("\nExporting Slack activities...");
   await exportSlackActivities(dataPath);
 
-  console.log("\n📋 Exporting Slack EOD messages...");
+  console.log("\nExporting Slack EOD messages...");
   await exportSlackEodMessages(dataPath);
 
-  console.log("\n✅ Data export completed!");
+  console.log("\nData export completed!");
 }
 
 // =============================================================================
@@ -96,7 +96,7 @@ if (import.meta.main) {
   exportData()
     .then(() => process.exit(0))
     .catch((error) => {
-      console.error("❌ Failed to export data:", error);
+      console.error(" Failed to export data:", error);
       process.exit(1);
     });
 }

@@ -55,6 +55,12 @@ export interface DatabaseConfig {
 let dbInstance: PGlite | null = null;
 
 /**
+ * Promise to track initialization in progress.
+ * @internal
+ */
+let initPromise: Promise<PGlite> | null = null;
+
+/**
  * Retrieves the environment configuration for the database.
  *
  * @remarks
@@ -79,6 +85,60 @@ export function getConfig(): DatabaseConfig {
 }
 
 /**
+ * Initializes the PGlite database and waits for it to be ready.
+ *
+ * @remarks
+ * Uses `PGlite.create()` which properly awaits WASM initialization.
+ * This is the recommended way to initialize PGlite in async contexts.
+ *
+ * @returns Promise resolving to the ready PGlite database instance
+ *
+ * @throws {Error} If `PGLITE_DB_PATH` environment variable is not set
+ *
+ * @example
+ * ```typescript
+ * // Initialize database asynchronously
+ * const db = await initDb();
+ *
+ * // Execute queries safely
+ * const result = await db.query("SELECT * FROM contributor");
+ * ```
+ */
+export async function initDb(): Promise<PGlite> {
+  // Return existing instance if ready
+  if (dbInstance) {
+    return dbInstance;
+  }
+
+  // Return existing initialization if in progress
+  if (initPromise) {
+    return initPromise;
+  }
+
+  const { dataPath } = getConfig();
+
+  if (!dataPath) {
+    throw new Error(
+      "'PGLITE_DB_PATH' environment needs to be set with a path to the database data."
+    );
+  }
+
+  // Start async initialization
+  initPromise = (async () => {
+    // Normalize path for Windows compatibility
+    const normalizedPath = dataPath === ":memory:" ? dataPath : resolve(dataPath);
+
+    // Use PGlite.create() which properly awaits WASM initialization
+    const db = await PGlite.create(dataPath === ":memory:" ? undefined : normalizedPath);
+    dbInstance = db;
+    initPromise = null;
+    return db;
+  })();
+
+  return initPromise;
+}
+
+/**
  * Initializes and returns the PGlite database instance.
  *
  * @remarks
@@ -89,6 +149,9 @@ export function getConfig(): DatabaseConfig {
  * Special values for `PGLITE_DB_PATH`:
  * - `:memory:` - Creates an in-memory database (useful for testing)
  * - Any other path - Creates/opens a persistent database at that location
+ *
+ * @deprecated Use `initDb()` for proper async initialization. This function
+ * may return an instance before WASM is ready in some environments.
  *
  * @returns The PGlite database instance
  *
@@ -109,8 +172,6 @@ export function getConfig(): DatabaseConfig {
 export function getDb(): PGlite {
   const { dataPath } = getConfig();
 
-  console.log("[DEBUG] PGLITE_DB_PATH:", dataPath);
-
   if (!dataPath) {
     throw new Error(
       "'PGLITE_DB_PATH' environment needs to be set with a path to the database data."
@@ -121,7 +182,6 @@ export function getDb(): PGlite {
     // Support in-memory database for testing
     // Normalize path for Windows compatibility
     const normalizedPath = dataPath === ":memory:" ? dataPath : resolve(dataPath);
-    console.log("[DEBUG] Creating PGlite instance with normalized path:", normalizedPath);
     dbInstance = dataPath === ":memory:" ? new PGlite() : new PGlite(normalizedPath);
   }
 

@@ -121,7 +121,7 @@ export async function exportSlackActivities(
   }
 
   console.log(
-    `   ✅ Exported ${totalExported} Slack activities for ${grouped.size} contributors`
+    `Exported ${totalExported} Slack activities for ${grouped.size} contributors`
   );
 
   return {

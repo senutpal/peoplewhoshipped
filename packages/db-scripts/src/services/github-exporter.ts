@@ -129,7 +129,7 @@ export async function exportGitHubActivities(
   }
 
   console.log(
-    `   ✅ Exported ${totalExported} GitHub activities for ${grouped.size} contributors`
+    `Exported ${totalExported} GitHub activities for ${grouped.size} contributors`
   );
 
   return {

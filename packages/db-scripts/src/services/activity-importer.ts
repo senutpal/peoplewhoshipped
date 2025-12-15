@@ -80,11 +80,11 @@ export async function importActivitiesFromDir(
       await addContributors(contributors);
 
       await addActivities(activities);
-      console.log(`   ✅ Imported ${activities.length} ${label} activities`);
+      console.log(`Imported ${activities.length} ${label} activities`);
     }
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") {
-      console.log(`   ⚠️  No ${label} activities directory found, skipping...`);
+      console.log(`No ${label} activities directory found, skipping...`);
     } else {
       throw error;
     }

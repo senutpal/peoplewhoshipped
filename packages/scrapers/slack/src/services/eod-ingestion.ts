@@ -77,7 +77,7 @@ export async function ingestEodUpdates(): Promise<EodIngestionResult> {
   // Bulk insert all activities at once with text merging enabled
   if (processingResult.activities.length > 0) {
     await addActivities(processingResult.activities, { mergeText: true });
-    console.log(`\n✓ Inserted ${processingResult.activities.length} total EOD activities`);
+    console.log(`\nInserted ${processingResult.activities.length} total EOD activities`);
   }
 
   // Bulk delete all processed messages at once

@@ -1,0 +1,53 @@
+# =============================================================================
+# Bun Test Configuration
+# =============================================================================
+#
+# This file configures Bun's native test runner for the leaderboard monorepo.
+# 
+# Usage:
+#   bun test                    # Run all tests
+#   bun test --watch            # Watch mode
+#   bun test --coverage         # With coverage report
+#   bun test path/to/file       # Run specific test file
+#
+# =============================================================================
+
+[test]
+# Preload global test setup file before running tests
+preload = ["./test/setup.ts"]
+
+# Test file patterns:
+#   bun test ./packages    - runs Bun unit tests (.test.ts files in packages/)
+#   bunx playwright test   - runs Playwright E2E tests (.e2e.ts files in apps/web/e2e/)
+root = "./"
+
+# Exclude directories that should not be tested by Bun
+# Note: Playwright E2E tests use .e2e.ts extension and are run with `bun run test:e2e`
+exclude = [
+  "**/node_modules/**",
+  "**/e2e/**",
+  "**/dist/**",
+  "**/build/**",
+  "**/.next/**",
+  "**/playwright-report/**"
+]
+
+# Exclude patterns for COVERAGE reports (not test discovery)
+# These files are excluded from coverage calculation
+coveragePathIgnorePatterns = ["**/e2e/**", "**/node_modules/**", "**/*.e2e.ts"]
+
+# Enable coverage reporting
+# Default timeout for each test (30 seconds)
+timeout = 30000
+
+# Bail on first test failure (useful for CI)
+# bail = true
+
+# Retry failed tests (useful for flaky tests)
+# retry = 2
+
+[test.env]
+NODE_ENV = "test"
+PGLITE_DB_PATH = ":memory:"
+LEADERBOARD_DATA_PATH = "./test/fixtures/data"
+SCRAPE_DAYS = "7"

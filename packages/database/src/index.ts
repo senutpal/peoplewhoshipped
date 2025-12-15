@@ -91,6 +91,7 @@ export type {
  */
 export {
   getDb,
+  initDb,
   resetDbInstance,
   getConfig,
   type DatabaseConfig,

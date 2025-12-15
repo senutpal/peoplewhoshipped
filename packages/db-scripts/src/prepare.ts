@@ -123,23 +123,23 @@ CREATE INDEX IF NOT EXISTS idx_activity_definition ON activity(activity_definiti
  * ```
  */
 export async function prepareDatabase(): Promise<void> {
-  console.log("🗄️  Preparing database schema...");
+  console.log("Preparing database schema...");
 
   const db = getDb();
 
   // Create main schema tables
-  console.log("   Creating core tables...");
+  console.log("Creating core tables...");
   await db.exec(SCHEMA_SQL);
 
   // Create Slack EOD table (separate function for modularity)
-  console.log("   Creating Slack EOD table...");
+  console.log("Creating Slack EOD table...");
   await createSlackEodTable();
 
   // Upsert activity definitions
-  console.log("   Inserting activity definitions...");
+  console.log("Inserting activity definitions...");
   await upsertActivityDefinitions(ALL_ACTIVITY_DEFINITIONS);
 
-  console.log("✅ Database schema prepared successfully!");
+  console.log("Database schema prepared successfully!");
 }
 
 // =============================================================================
@@ -151,7 +151,7 @@ if (import.meta.main) {
   prepareDatabase()
     .then(() => process.exit(0))
     .catch((error) => {
-      console.error("❌ Failed to prepare database:", error);
+      console.error("Failed to prepare database:", error);
       process.exit(1);
     });
 }

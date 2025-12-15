@@ -112,7 +112,7 @@ export async function exportSlackEodMessages(
   }
 
   console.log(
-    `   ✅ Exported ${totalExported} Slack EOD messages for ${grouped.size} users`
+    `Exported ${totalExported} Slack EOD messages for ${grouped.size} users`
   );
 
   return {

@@ -45,7 +45,7 @@ async function fetchContributorMarkdown(
 
     if (!response.ok) {
       if (response.status === 404) {
-        console.log(`  ⚠️  Markdown file not found for ${username}`);
+        console.log(`Markdown file not found for ${username}`);
         return null;
       }
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -53,7 +53,7 @@ async function fetchContributorMarkdown(
 
     return await response.text();
   } catch (error) {
-    console.error(`  ❌ Error fetching markdown for ${username}:`, error);
+    console.error(`Error fetching markdown for ${username}:`, error);
     return null;
   }
 }
@@ -146,11 +146,11 @@ export async function updateRoles(options: UpdateRolesOptions): Promise<{
   errorCount: number;
   totalProcessed: number;
 }> {
-  console.log("🚀 Starting role update process...\n");
+  console.log("Starting role update process...\n");
 
   // Get all contributors from database
   const contributors = await listContributors();
-  console.log(`📊 Found ${contributors.length} contributors in database\n`);
+  console.log(`Found ${contributors.length} contributors in database\n`);
 
   let successCount = 0;
   let notFoundCount = 0;
@@ -175,7 +175,7 @@ export async function updateRoles(options: UpdateRolesOptions): Promise<{
       const { role, slack } = extractFrontmatterData(markdown);
 
       if (!role && !slack) {
-        console.log(`  ⚠️  No role or slack found in frontmatter for ${username}`);
+        console.log(`No role or slack found in frontmatter for ${username}`);
         noDataCount++;
         continue;
       }
@@ -187,10 +187,10 @@ export async function updateRoles(options: UpdateRolesOptions): Promise<{
       if (role) updates.push(`role: ${role}`);
       if (slack) updates.push(`slack_user_id: ${slack}`);
 
-      console.log(`  ✅ Updated ${updates.join(", ")}`);
+      console.log(`Updated ${updates.join(", ")}`);
       successCount++;
     } catch (error) {
-      console.error(`  ❌ Error processing ${username}:`, error);
+      console.error(`Error processing ${username}:`, error);
       errorCount++;
     }
 
@@ -199,12 +199,12 @@ export async function updateRoles(options: UpdateRolesOptions): Promise<{
 
   // Print summary
   console.log("=".repeat(50));
-  console.log("📈 Summary:");
-  console.log(`  ✅ Successfully updated: ${successCount}`);
-  console.log(`  ⚠️  Markdown not found: ${notFoundCount}`);
-  console.log(`  ⚠️  No role or slack in frontmatter: ${noDataCount}`);
-  console.log(`  ❌ Errors: ${errorCount}`);
-  console.log(`  📊 Total processed: ${contributors.length}`);
+  console.log("Summary:");
+  console.log(`Successfully updated: ${successCount}`);
+  console.log(`Markdown not found: ${notFoundCount}`);
+  console.log(`No role or slack in frontmatter: ${noDataCount}`);
+  console.log(`Errors: ${errorCount}`);
+  console.log(`Total processed: ${contributors.length}`);
   console.log("=".repeat(50));
 
   return {

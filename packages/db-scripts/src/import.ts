@@ -78,25 +78,25 @@ export { importSlackEodMessages } from "./services/eod-importer";
  */
 export async function importData(): Promise<void> {
   const dataPath = getDataPath();
-  console.log(`📥 Importing data from: ${dataPath}`);
+  console.log(`Importing data from: ${dataPath}`);
 
   // Ensure database is initialized
   getDb();
 
   // Import in order: contributors first (for foreign key references)
-  console.log("\n👥 Importing contributors...");
+  console.log("\nImporting contributors...");
   await importContributors(dataPath);
 
-  console.log("\n🐙 Importing GitHub activities...");
+  console.log("\nImporting GitHub activities...");
   await importGitHubActivities(dataPath);
 
-  console.log("\n💬 Importing Slack activities...");
+  console.log("\nImporting Slack activities...");
   await importSlackActivities(dataPath);
 
-  console.log("\n📋 Importing Slack EOD messages...");
+  console.log("\nImporting Slack EOD messages...");
   await importSlackEodMessages(dataPath);
 
-  console.log("\n✅ Data import completed!");
+  console.log("\nData import completed!");
 }
 
 // =============================================================================
@@ -108,7 +108,7 @@ if (import.meta.main) {
   importData()
     .then(() => process.exit(0))
     .catch((error) => {
-      console.error("❌ Failed to import data:", error);
+      console.error("Failed to import data:", error);
       process.exit(1);
     });
 }
