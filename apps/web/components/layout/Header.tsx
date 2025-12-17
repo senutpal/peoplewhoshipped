@@ -58,11 +58,17 @@ export function Header({ config }: HeaderProps): React.ReactElement {
 
   const navLinks = [
     { name: "Home", href: "/" },
-    { name: "Leaderboard", href: "/leaderboard" },
+    { name: "Leaderboard", href: "/leaderboard/week" },
     { name: "People", href: "/people" },
   ];
 
-  const isActive = (path: string) => pathname === path;
+  const isActive = useCallback(
+    (path: string) => {
+      if (path === "/") return pathname === path;
+      return pathname.startsWith(path.replace(/\/week$|\/month$|\/year$/, ""));
+    },
+    [pathname]
+  );
 
   return (
     <>

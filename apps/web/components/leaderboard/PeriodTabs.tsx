@@ -36,7 +36,7 @@ export function PeriodTabs({
   const periods: LeaderboardPeriod[] = ["week", "month", "year"];
 
   return (
-    <nav className="flex gap-2 mb-8 border-b" role="tablist" aria-label="Leaderboard time period">
+    <nav className="flex gap-1 sm:gap-2 mb-6 sm:mb-8 border-b overflow-x-auto scrollbar-hide" role="tablist" aria-label="Leaderboard time period">
       {periods.map((period) => (
         <Link
           key={period}
@@ -45,7 +45,7 @@ export function PeriodTabs({
           aria-selected={currentPeriod === period}
           aria-current={currentPeriod === period ? "page" : undefined}
           className={cn(
-            "px-4 py-2 font-medium transition-colors border-b-2 capitalize",
+            "px-3 sm:px-4 py-2 text-sm sm:text-base font-medium transition-colors border-b-2 capitalize whitespace-nowrap",
             currentPeriod === period
               ? "border-primary text-primary"
               : "border-transparent text-muted-foreground hover:text-foreground"

@@ -6,7 +6,6 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
 import type { LeaderboardEntry, TopContributorsByActivity } from "@leaderboard/database";
 import {
   PeriodTabs,
@@ -30,8 +29,6 @@ export interface LeaderboardClientProps {
   endDate: Date;
   /** Top contributors by activity type */
   topByActivity: TopContributorsByActivity;
-  /** Roles that should be hidden by default */
-  hiddenRoles: string[];
 }
 
 /**
@@ -46,111 +43,26 @@ export function LeaderboardClient({
   startDate,
   endDate,
   topByActivity,
-  hiddenRoles,
 }: LeaderboardClientProps): React.ReactElement {
-  const router = useRouter();
-  const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Get selected roles from query params
-  const selectedRoles = useMemo(() => {
-    const rolesParam = searchParams.get("roles");
-    if (rolesParam) {
-      return new Set(rolesParam.split(","));
-    }
-    // Default: exclude hidden roles
-    const allRoles = new Set<string>();
-    entries.forEach((entry) => {
-      if (entry.role && !hiddenRoles.includes(entry.role)) {
-        allRoles.add(entry.role);
-      }
-    });
-    return allRoles;
-  }, [searchParams, entries, hiddenRoles]);
-
-  // Get unique roles from entries
-  const availableRoles = useMemo(() => {
-    const roles = new Set<string>();
-    entries.forEach((entry) => {
-      if (entry.role) {
-        roles.add(entry.role);
-      }
-    });
-    return Array.from(roles).sort();
-  }, [entries]);
-
-  // Filter entries by selected roles and search query
+  // Filter entries by search query only
   const filteredEntries = useMemo(() => {
-    let filtered = entries;
-
-    // Filter by roles
-    if (selectedRoles.size > 0) {
-      filtered = filtered.filter(
-        (entry) => entry.role && selectedRoles.has(entry.role)
-      );
+    if (!searchQuery.trim()) {
+      return entries;
     }
 
-    // Filter by search query
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter((entry) => {
-        const name = (entry.name || entry.username).toLowerCase();
-        const username = entry.username.toLowerCase();
-        return name.includes(query) || username.includes(query);
-      });
-    }
-
-    return filtered;
-  }, [entries, selectedRoles, searchQuery]);
-
-  const toggleRole = useCallback(
-    (role: string) => {
-      const newSelected = new Set(selectedRoles);
-      if (newSelected.has(role)) {
-        newSelected.delete(role);
-      } else {
-        newSelected.add(role);
-      }
-
-      const params = new URLSearchParams(searchParams.toString());
-      if (newSelected.size > 0) {
-        params.set("roles", Array.from(newSelected).join(","));
-      } else {
-        params.delete("roles");
-      }
-      router.push(`?${params.toString()}`, { scroll: false });
-    },
-    [selectedRoles, searchParams, router]
-  );
+    const query = searchQuery.toLowerCase();
+    return entries.filter((entry) => {
+      const name = (entry.name || entry.username).toLowerCase();
+      const username = entry.username.toLowerCase();
+      return name.includes(query) || username.includes(query);
+    });
+  }, [entries, searchQuery]);
 
   const clearFilters = useCallback(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete("roles");
-    router.push(`?${params.toString()}`, { scroll: false });
     setSearchQuery("");
-  }, [searchParams, router]);
-
-  // Filter top contributors by selected roles
-  const filteredTopByActivity = useMemo(() => {
-    if (selectedRoles.size === 0) {
-      return topByActivity;
-    }
-
-    const filtered: TopContributorsByActivity = {};
-
-    for (const [activityName, contributors] of Object.entries(topByActivity)) {
-      const filteredContributors = contributors.filter((contributor) => {
-        const entry = entries.find((e) => e.username === contributor.username);
-        return entry?.role && selectedRoles.has(entry.role);
-      });
-
-      if (filteredContributors.length > 0) {
-        filtered[activityName] = filteredContributors;
-      }
-    }
-
-    return filtered;
-  }, [topByActivity, selectedRoles, entries]);
+  }, []);
 
   const periodLabels: Record<LeaderboardPeriod, string> = {
     week: "Weekly",
@@ -159,29 +71,26 @@ export function LeaderboardClient({
   };
 
   return (
-    <div className="container mx-auto px-8 py-8 mt-24">
-      <div className="flex gap-8">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 mt-20 sm:mt-24">
+      <div className="flex flex-col xl:flex-row gap-6 xl:gap-8">
         {/* Main Content */}
         <div className="flex-1 min-w-0">
           {/* Header */}
-          <div className="mb-8">
-            <div className="flex items-start justify-between mb-4">
+          <div className="mb-6 sm:mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
               <div>
-                <h1 className="text-4xl font-bold mb-2">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-1 sm:mb-2">
                   {periodLabels[period]} Leaderboard
                 </h1>
-                <p className="text-muted-foreground">
+                <p className="text-sm sm:text-base text-muted-foreground">
                   {filteredEntries.length} of {entries.length} contributors
-                  {(selectedRoles.size > 0 || searchQuery) && " (filtered)"}
+                  {searchQuery && " (filtered)"}
                 </p>
               </div>
 
               <LeaderboardFilters
                 searchQuery={searchQuery}
                 onSearchChange={setSearchQuery}
-                roles={availableRoles}
-                selectedRoles={selectedRoles}
-                onRoleToggle={toggleRole}
                 onClearFilters={clearFilters}
               />
             </div>
@@ -192,13 +101,13 @@ export function LeaderboardClient({
 
           {/* Leaderboard */}
           {filteredEntries.length === 0 ? (
-            <div className="rounded-lg border bg-card p-12 text-center text-muted-foreground">
+            <div className="rounded-lg border bg-card p-8 sm:p-12 text-center text-muted-foreground">
               {entries.length === 0
                 ? "No contributors with points in this period"
-                : "No contributors match the selected filters"}
+                : "No contributors match the search query"}
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {filteredEntries.map((entry, index) => (
                 <LeaderboardCard
                   key={entry.username}
@@ -212,8 +121,8 @@ export function LeaderboardClient({
           )}
         </div>
 
-        {/* Sidebar */}
-        <TopContributorsSidebar topByActivity={filteredTopByActivity} />
+        {/* Sidebar - visible on all screens, stacks below on mobile/tablet */}
+        <TopContributorsSidebar topByActivity={topByActivity} />
       </div>
     </div>
   );

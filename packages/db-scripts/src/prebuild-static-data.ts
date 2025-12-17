@@ -73,6 +73,7 @@ export async function exportStaticData(outputDir: string): Promise<void> {
   // Get config
   const config = getYamlConfigSync();
   const topContributorsConfig = config.leaderboard.top_contributors || [];
+  const hiddenRoles = getHiddenRoles(config);
 
   // 1. Export usernames
   console.log("Exporting usernames...");
@@ -87,12 +88,12 @@ export async function exportStaticData(outputDir: string): Promise<void> {
 
   // 3. Export people page data
   console.log("Exporting people data...");
-  const people = await getAllContributorsWithAvatars(getHiddenRoles(config));
+  const people = await getAllContributorsWithAvatars(hiddenRoles);
   writeFileSync(join(staticDir, "people.json"), JSON.stringify(people, null, 2));
 
   // 4. Export recent activities for home page
   console.log("Exporting recent activities...");
-  const recentActivities = await getRecentActivitiesGroupedByType(7);
+  const recentActivities = await getRecentActivitiesGroupedByType(7, hiddenRoles);
   // Serialize dates
   const serializedActivities = recentActivities.map(group => ({
     ...group,
@@ -108,8 +109,8 @@ export async function exportStaticData(outputDir: string): Promise<void> {
   for (const period of PERIODS) {
     const { startDate, endDate } = getDateRange(period);
     const [entries, topByActivity] = await Promise.all([
-      getLeaderboard(startDate, endDate),
-      getTopContributorsByActivity(startDate, endDate, topContributorsConfig),
+      getLeaderboard(startDate, endDate, hiddenRoles),
+      getTopContributorsByActivity(startDate, endDate, topContributorsConfig, hiddenRoles),
     ]);
     
     const leaderboardData = {

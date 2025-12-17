@@ -177,6 +177,7 @@ export async function listActivityDefinitions(): Promise<
  *
  * @param startDate - Start date of the range
  * @param endDate - End date of the range
+ * @param excludeRoles - Optional array of role names to exclude (e.g., ["bot"])
  * @returns Leaderboard entries sorted by total points (descending)
  *
  * @example
@@ -185,7 +186,7 @@ export async function listActivityDefinitions(): Promise<
  * startDate.setDate(startDate.getDate() - 7);
  * const endDate = new Date();
  *
- * const leaderboard = await getLeaderboard(startDate, endDate);
+ * const leaderboard = await getLeaderboard(startDate, endDate, ["bot"]);
  * leaderboard.forEach((entry, rank) => {
  *   console.log(`#${rank + 1}: ${entry.username} - ${entry.total_points} points`);
  * });
@@ -193,9 +194,22 @@ export async function listActivityDefinitions(): Promise<
  */
 export async function getLeaderboard(
   startDate: Date,
-  endDate: Date
+  endDate: Date,
+  excludeRoles?: string[]
 ): Promise<LeaderboardEntry[]> {
   const db = getDb();
+
+  // Build WHERE clause with optional role exclusion
+  const whereConditions = ["a.occured_at >= $1", "a.occured_at <= $2"];
+  const params: string[] = [startDate.toISOString(), endDate.toISOString()];
+
+  if (excludeRoles && excludeRoles.length > 0) {
+    params.push(...excludeRoles);
+    const placeholders = excludeRoles.map((_, i) => `$${i + 3}`).join(", ");
+    whereConditions.push(`(c.role IS NULL OR c.role NOT IN (${placeholders}))`);
+  }
+
+  const whereClause = whereConditions.join(" AND ");
 
   // Get all activities in the date range with contributor info
   const result = await db.query<{
@@ -221,10 +235,10 @@ export async function getLeaderboard(
     FROM activity a
     JOIN contributor c ON a.contributor = c.username
     JOIN activity_definition ad ON a.activity_definition = ad.slug
-    WHERE a.occured_at >= $1 AND a.occured_at <= $2
+    WHERE ${whereClause}
     ORDER BY c.username, a.occured_at;
   `,
-    [startDate.toISOString(), endDate.toISOString()]
+    params
   );
 
   // Group by contributor and calculate totals
@@ -290,20 +304,34 @@ export async function getLeaderboard(
  * Get recent activities grouped by activity type.
  *
  * @param days - Number of days to look back
+ * @param excludeRoles - Optional array of role names to exclude (e.g., ["bot"])
  * @returns Activities grouped by activity definition
  *
  * @example
  * ```typescript
- * const groups = await getRecentActivitiesGroupedByType(7);
+ * const groups = await getRecentActivitiesGroupedByType(7, ["bot"]);
  * groups.forEach((group) => {
  *   console.log(`${group.activity_name}: ${group.activities.length} activities`);
  * });
  * ```
  */
 export async function getRecentActivitiesGroupedByType(
-  days: number
+  days: number,
+  excludeRoles?: string[]
 ): Promise<ActivityGroup[]> {
   const db = getDb();
+
+  // Build WHERE clause with optional role exclusion
+  const whereConditions = [`a.occured_at >= NOW() - INTERVAL '${days} days'`];
+  const params: string[] = [];
+
+  if (excludeRoles && excludeRoles.length > 0) {
+    params.push(...excludeRoles);
+    const placeholders = excludeRoles.map((_, i) => `$${i + 1}`).join(", ");
+    whereConditions.push(`(c.role IS NULL OR c.role NOT IN (${placeholders}))`);
+  }
+
+  const whereClause = whereConditions.join(" AND ");
 
   const result = await db.query<{
     slug: string;
@@ -342,9 +370,10 @@ export async function getRecentActivitiesGroupedByType(
     FROM activity a
     JOIN contributor c ON a.contributor = c.username
     JOIN activity_definition ad ON a.activity_definition = ad.slug
-    WHERE a.occured_at >= NOW() - INTERVAL '${days} days'
+    WHERE ${whereClause}
     ORDER BY a.occured_at DESC;
-  `
+  `,
+    params
   );
 
   // Group activities by activity_definition
@@ -387,6 +416,7 @@ export async function getRecentActivitiesGroupedByType(
  * @param startDate - Start date of the range
  * @param endDate - End date of the range
  * @param activitySlugs - Optional array of activity definition slugs to filter by
+ * @param excludeRoles - Optional array of role names to exclude (e.g., ["bot"])
  * @returns Top 3 contributors for each activity type
  *
  * @example
@@ -394,14 +424,16 @@ export async function getRecentActivitiesGroupedByType(
  * const topByActivity = await getTopContributorsByActivity(
  *   startDate,
  *   endDate,
- *   ["pr_merged", "pr_opened"]
+ *   ["pr_merged", "pr_opened"],
+ *   ["bot"]
  * );
  * ```
  */
 export async function getTopContributorsByActivity(
   startDate: Date,
   endDate: Date,
-  activitySlugs?: string[]
+  activitySlugs?: string[],
+  excludeRoles?: string[]
 ): Promise<TopContributorsByActivity> {
   const db = getDb();
 
@@ -412,9 +444,17 @@ export async function getTopContributorsByActivity(
     endDate.toISOString(),
   ];
 
+  let paramIndex = 3;
+
   if (activitySlugs && activitySlugs.length > 0) {
-    whereClause += ` AND ad.slug = ANY($3)`;
+    whereClause += ` AND ad.slug = ANY($${paramIndex})`;
     queryParams.push(activitySlugs);
+    paramIndex++;
+  }
+
+  if (excludeRoles && excludeRoles.length > 0) {
+    whereClause += ` AND (c.role IS NULL OR c.role NOT IN (${excludeRoles.map((_, i) => `$${paramIndex + i}`).join(", ")}))`;
+    queryParams.push(...excludeRoles);
   }
 
   const result = await db.query<{

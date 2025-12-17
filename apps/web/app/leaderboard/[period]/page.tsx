@@ -6,11 +6,8 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { getLeaderboardData } from "@/lib/static-data";
-import { getYamlConfigSync, getHiddenRoles } from "@leaderboard/config";
 import { LeaderboardClient } from "../LeaderboardClient";
 import type { LeaderboardPeriod } from "@/components/leaderboard";
-
-const config = getYamlConfigSync();
 
 /** Valid periods for static generation */
 const VALID_PERIODS: LeaderboardPeriod[] = ["week", "month", "year"];
@@ -62,7 +59,6 @@ export default async function LeaderboardPeriodPage({
         startDate={startDate}
         endDate={endDate}
         topByActivity={topByActivity}
-        hiddenRoles={getHiddenRoles(config)}
       />
     </Suspense>
   );

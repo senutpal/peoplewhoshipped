@@ -50,6 +50,12 @@ export enum GitHubActivityDefinition {
   ISSUE_ASSIGNED = "issue_assigned",
 
   /**
+   * User labeled/triaged an issue.
+   * Awarded when a contributor adds labels to an issue for triage.
+   */
+  ISSUE_LABELED = "issue_labeled",
+
+  /**
    * User opened a pull request.
    * Awarded when a contributor creates a new pull request.
    */
@@ -185,7 +191,7 @@ export const GITHUB_ACTIVITY_DEFINITIONS: ActivityDefinitionConfig[] = [
     slug: GitHubActivityDefinition.PR_REVIEWED,
     name: "PR Reviewed",
     description: "Reviewed a Pull Request",
-    points: 2,
+    points: 10,
     icon: "eye",
   },
   {
@@ -199,7 +205,7 @@ export const GITHUB_ACTIVITY_DEFINITIONS: ActivityDefinitionConfig[] = [
     slug: GitHubActivityDefinition.PR_OPENED,
     name: "PR Opened",
     description: "Opened a Pull Request",
-    points: 1,
+    points: 5,
     icon: "git-pull-request-create-arrow",
   },
   {
@@ -222,6 +228,13 @@ export const GITHUB_ACTIVITY_DEFINITIONS: ActivityDefinitionConfig[] = [
     description: "Closed an Issue",
     points: 0,
     icon: null,
+  },
+  {
+    slug: GitHubActivityDefinition.ISSUE_LABELED,
+    name: "Issue Labeled",
+    description: "Labeled/triaged an Issue",
+    points: 2,
+    icon: "tag",
   },
   {
     slug: GitHubActivityDefinition.COMMIT_CREATED,
