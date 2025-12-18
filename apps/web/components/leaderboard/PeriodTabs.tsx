@@ -24,34 +24,37 @@ export interface PeriodTabsProps {
  *
  * @param props - Component props
  * @returns PeriodTabs component
- *
- * @example
- * ```tsx
- * <PeriodTabs currentPeriod="week" />
- * ```
  */
 export function PeriodTabs({
   currentPeriod,
 }: PeriodTabsProps): React.ReactElement {
-  const periods: LeaderboardPeriod[] = ["week", "month", "year"];
+  const periods: { value: LeaderboardPeriod; label: string }[] = [
+    { value: "week", label: "This Week" },
+    { value: "month", label: "This Month" },
+    { value: "year", label: "This Year" },
+  ];
 
   return (
-    <nav className="flex gap-1 sm:gap-2 mb-6 sm:mb-8 border-b overflow-x-auto scrollbar-hide" role="tablist" aria-label="Leaderboard time period">
+    <nav 
+      className="flex gap-1 p-1 rounded-xl bg-secondary/50 dark:bg-zinc-900 w-full sm:w-fit overflow-x-auto scrollbar-hide" 
+      role="tablist" 
+      aria-label="Leaderboard time period"
+    >
       {periods.map((period) => (
         <Link
-          key={period}
-          href={`/leaderboard/${period}`}
+          key={period.value}
+          href={`/leaderboard/${period.value}`}
           role="tab"
-          aria-selected={currentPeriod === period}
-          aria-current={currentPeriod === period ? "page" : undefined}
+          aria-selected={currentPeriod === period.value}
+          aria-current={currentPeriod === period.value ? "page" : undefined}
           className={cn(
-            "px-3 sm:px-4 py-2 text-sm sm:text-base font-medium transition-colors border-b-2 capitalize whitespace-nowrap",
-            currentPeriod === period
-              ? "border-primary text-primary"
-              : "border-transparent text-muted-foreground hover:text-foreground"
+            "relative flex-1 sm:flex-none px-4 sm:px-5 py-2 sm:py-2.5 text-sm font-medium transition-all duration-300 rounded-lg text-center whitespace-nowrap",
+            currentPeriod === period.value
+              ? "bg-card text-[var(--emerald)] shadow-sm dark:bg-[var(--emerald-light)]/70 dark:text-[var(--emerald)]"
+              : "text-muted-foreground hover:text-foreground"
           )}
         >
-          {period}
+          {period.label}
         </Link>
       ))}
     </nav>

@@ -19,52 +19,47 @@ export interface StatsCardsProps {
 }
 
 /**
- * Stat card component for individual stats.
- * @internal Used internally by StatsCards component.
- */
-interface StatCardProps {
-  /** Card title */
-  readonly title: string;
-  /** Main value to display */
-  readonly value: number | string;
-  /** Subtitle/description */
-  readonly subtitle: string;
-  /** Icon component */
-  readonly icon: React.ReactNode;
-}
-
-/**
- * Individual stat card.
+ * Individual stat card - compact for mobile.
  */
 function StatCard({
   title,
   value,
   subtitle,
   icon,
-}: StatCardProps): React.ReactElement {
+  accentColor = "emerald",
+}: {
+  title: string;
+  value: number | string;
+  subtitle: string;
+  icon: React.ReactNode;
+  accentColor?: "emerald" | "gold";
+}): React.ReactElement {
+  const colorClasses = accentColor === "gold" 
+    ? "group-hover:bg-[var(--gold-light)] group-hover:text-[var(--gold)] group-hover:ring-[var(--gold)]/20"
+    : "group-hover:bg-[var(--emerald-light)] group-hover:text-[var(--emerald)] group-hover:ring-[var(--emerald)]/20";
+
   return (
-    <div className="group relative overflow-hidden rounded-2xl bg-white p-6 md:p-8 border border-zinc-100 transition-all duration-300 hover:border-green-500/20 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:bg-black dark:border-zinc-800 dark:hover:border-green-400/20 dark:hover:shadow-[0_8px_30px_rgb(74,222,128,0.05)]">
-      <div className="absolute right-0 top-0 -mr-6 -mt-6 h-24 w-24 rounded-full bg-green-500/5 blur-2xl transition-all duration-500 group-hover:bg-green-500/10 dark:bg-green-400/5 dark:group-hover:bg-green-400/10" />
+    <div className="group relative overflow-hidden rounded-xl sm:rounded-2xl bg-card p-3 sm:p-5 border border-border/50 transition-all duration-300 hover:border-[var(--emerald)]/30 hover:shadow-luxury">
+      {/* Subtle glow on hover */}
+      <div className="absolute right-0 top-0 -mr-8 -mt-8 h-24 w-24 rounded-full bg-[var(--emerald)]/5 blur-2xl transition-all duration-500 group-hover:bg-[var(--emerald)]/10 opacity-0 group-hover:opacity-100" />
       
-      <div className="relative z-10 flex flex-col h-full justify-between">
-        <div className="flex items-start justify-between mb-4">
-          <div className="rounded-xl bg-zinc-50 p-2.5 text-zinc-600 ring-1 ring-inset ring-zinc-100 transition-colors group-hover:bg-green-50 group-hover:text-green-600 group-hover:ring-green-100 dark:bg-zinc-900 dark:text-zinc-400 dark:ring-zinc-800 dark:group-hover:bg-green-900/20 dark:group-hover:text-green-400 dark:group-hover:ring-green-900/30">
+      <div className="relative z-10 flex flex-col h-full">
+        <div className="hidden sm:flex items-start justify-between mb-3">
+          <div className={`rounded-xl bg-secondary/70 p-2 sm:p-2.5 text-muted-foreground ring-1 ring-border/50 transition-all duration-300 ${colorClasses}`}>
             {React.cloneElement(icon as React.ReactElement<{ className?: string }>, { 
-              className: "h-5 w-5 md:h-6 md:w-6 stroke-[1.5px]" 
+              className: "h-4 w-4 sm:h-5 sm:w-5 stroke-[1.5px]" 
             })}
           </div>
         </div>
 
-        <div className="space-y-1">
-          <h3 className="text-sm font-medium tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
+        <div className="space-y-0.5 sm:mt-auto">
+          <h3 className="text-[10px] sm:text-xs font-medium tracking-wider text-muted-foreground uppercase">
             {title}
           </h3>
-          <div className="flex items-baseline gap-2">
-            <span className="text-3xl md:text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-              {value}
-            </span>
+          <div className="text-xl sm:text-2xl font-semibold tracking-tight text-foreground font-[family-name:var(--font-jakarta)]">
+            {value}
           </div>
-          <p className="text-sm text-zinc-400 dark:text-zinc-500 pt-1">
+          <p className="text-[10px] sm:text-xs text-muted-foreground leading-tight">
             {subtitle}
           </p>
         </div>
@@ -75,18 +70,10 @@ function StatCard({
 
 /**
  * Grid of stat cards showing contributor statistics.
+ * Responsive: compact on mobile, spacious on desktop.
  *
  * @param props - Component props
  * @returns StatsCards component
- *
- * @example
- * ```tsx
- * <StatsCards
- *   totalPoints={1500}
- *   totalActivities={42}
- *   activityTypes={5}
- * />
- * ```
  */
 export function StatsCards({
   totalPoints,
@@ -95,24 +82,27 @@ export function StatsCards({
 }: StatsCardsProps): React.ReactElement {
   return (
     <section className="w-full" aria-label="Contributor statistics">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 md:gap-6 lg:gap-8">
+      <div className="grid grid-cols-3 gap-2 sm:gap-4">
         <StatCard
-          title="Total Points"
+          title="Points"
           value={totalPoints.toLocaleString()}
-          subtitle="Lifetime contribution"
+          subtitle="Lifetime total"
           icon={<Award />}
+          accentColor="gold"
         />
         <StatCard
-          title="Total Activities"
+          title="Activities"
           value={totalActivities.toLocaleString()}
-          subtitle="Events & engagements"
+          subtitle="All contributions"
           icon={<Activity />}
+          accentColor="emerald"
         />
         <StatCard
-          title="Activity Types"
+          title="Types"
           value={activityTypes}
-          subtitle="Unique categories"
+          subtitle="Categories"
           icon={<Calendar />}
+          accentColor="emerald"
         />
       </div>
     </section>

@@ -46,7 +46,6 @@ export function LeaderboardClient({
 }: LeaderboardClientProps): React.ReactElement {
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Filter entries by search query only
   const filteredEntries = useMemo(() => {
     if (!searchQuery.trim()) {
       return entries;
@@ -71,58 +70,73 @@ export function LeaderboardClient({
   };
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 mt-20 sm:mt-24">
-      <div className="flex flex-col xl:flex-row gap-6 xl:gap-8">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 pt-24 sm:pt-28">
+      <div className="flex flex-col xl:flex-row gap-8 xl:gap-10">
         {/* Main Content */}
         <div className="flex-1 min-w-0">
           {/* Header */}
-          <div className="mb-6 sm:mb-8">
-            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
-              <div>
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-1 sm:mb-2">
-                  {periodLabels[period]} Leaderboard
-                </h1>
-                <p className="text-sm sm:text-base text-muted-foreground">
-                  {filteredEntries.length} of {entries.length} contributors
-                  {searchQuery && " (filtered)"}
-                </p>
-              </div>
-
-              <LeaderboardFilters
-                searchQuery={searchQuery}
-                onSearchChange={setSearchQuery}
-                onClearFilters={clearFilters}
-              />
-            </div>
+          <div className="mb-6 sm:mb-8 animate-fade-up">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-medium mb-2 md:mb-4 font-[family-name:var(--font-jakarta)]">
+              {periodLabels[period]} Leaderboard
+            </h1>
+            <p className="text-sm sm:text-base text-muted-foreground">
+              <span className="text-[var(--emerald)] font-medium">{filteredEntries.length}</span>
+              {" "}of {entries.length} contributors
+              {searchQuery && (
+                <span className="text-muted-foreground/70"> (filtered)</span>
+              )}
+            </p>
           </div>
 
-          {/* Period Selector */}
-          <PeriodTabs currentPeriod={period} />
+          {/* Period Tabs + Search - aligned in same row */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8 animate-fade-up delay-100">
+            <PeriodTabs currentPeriod={period} />
+            <LeaderboardFilters
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              onClearFilters={clearFilters}
+            />
+          </div>
 
           {/* Leaderboard */}
           {filteredEntries.length === 0 ? (
-            <div className="rounded-lg border bg-card p-8 sm:p-12 text-center text-muted-foreground">
-              {entries.length === 0
-                ? "No contributors with points in this period"
-                : "No contributors match the search query"}
+            <div className="rounded-2xl border border-border/50 bg-card p-12 sm:p-16 text-center animate-fade-up delay-200">
+              <div className="w-12 h-12 rounded-full bg-secondary mx-auto mb-4 flex items-center justify-center">
+                <span className="text-2xl">🏆</span>
+              </div>
+              <h3 className="text-lg font-medium text-foreground mb-2">
+                {entries.length === 0 ? "No contributors yet" : "No results found"}
+              </h3>
+              <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+                {entries.length === 0
+                  ? "There are no contributors with points in this period."
+                  : "Try adjusting your search query."}
+              </p>
             </div>
           ) : (
             <div className="space-y-3 sm:space-y-4">
               {filteredEntries.map((entry, index) => (
-                <LeaderboardCard
+                <div 
                   key={entry.username}
-                  entry={entry}
-                  rank={index + 1}
-                  startDate={startDate}
-                  endDate={endDate}
-                />
+                  className="animate-fade-up"
+                  style={{ animationDelay: `${200 + index * 50}ms` }}
+                >
+                  <LeaderboardCard
+                    entry={entry}
+                    rank={index + 1}
+                    startDate={startDate}
+                    endDate={endDate}
+                  />
+                </div>
               ))}
             </div>
           )}
         </div>
 
-        {/* Sidebar - visible on all screens, stacks below on mobile/tablet */}
-        <TopContributorsSidebar topByActivity={topByActivity} />
+        {/* Sidebar */}
+        <div className="animate-slide-in delay-300">
+          <TopContributorsSidebar topByActivity={topByActivity} />
+        </div>
       </div>
     </div>
   );

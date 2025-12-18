@@ -4,7 +4,6 @@
  *
  * @security This component uses dangerouslySetInnerHTML for bio content.
  * Ensure bioHtml is sanitized server-side before passing to this component.
- * Recommended: Use DOMPurify or similar sanitization library.
  */
 
 import {
@@ -47,7 +46,7 @@ const getSocialIcon = (key: string) => {
 };
 
 /**
- * Compact profile header with inline layout.
+ * Profile header.
  *
  * @param props - Component props
  * @returns ContributorHeader component
@@ -63,49 +62,52 @@ export function ContributorHeader({
 
   return (
     <div className="flex gap-5 sm:gap-6">
-      {/* Avatar - Fixed Size, Compact */}
+      {/* Avatar - Premium styling */}
       <div className="relative shrink-0">
-        <Avatar className="h-16 w-16 rounded-2xl border border-zinc-100 shadow-sm sm:h-20 sm:w-20 dark:border-zinc-800">
+        <Avatar className="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl border-2 border-background shadow-luxury ring-1 ring-border/50">
           <AvatarImage
             src={contributor.avatar_url || undefined}
             alt={contributor.name || contributor.username}
             className="object-cover"
           />
-          <AvatarFallback className="rounded-2xl bg-zinc-50 text-lg font-medium text-zinc-900 dark:bg-zinc-900 dark:text-zinc-200">
+          <AvatarFallback className="rounded-2xl bg-secondary text-lg font-medium text-foreground">
             {initials}
           </AvatarFallback>
         </Avatar>
+        {/* Subtle gold accent */}
+        <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-lg bg-gradient-to-br from-amber-400 to-amber-500 border-2 border-background flex items-center justify-center">
+          <Award className="w-2.5 h-2.5 text-white" />
+        </div>
       </div>
 
-      {/* Info Section - Fluid Width */}
+      {/* Info Section */}
       <div className="flex min-w-0 flex-1 flex-col justify-center">
-        {/* Top Row: Name, Handle, Role */}
+        {/* Name & Handle */}
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <h1 className="truncate text-lg font-bold tracking-tight text-zinc-900 sm:text-xl dark:text-white">
+          <h1 className="truncate text-xl font-semibold text-foreground">
             {contributor.name || contributor.username}
           </h1>
           
-          <span className="truncate font-mono text-sm text-zinc-500 dark:text-zinc-500">
+          <span className="truncate mt-[5px] font-mono text-sm text-muted-foreground">
             @{contributor.username}
           </span>
 
           {contributor.role && (
-            <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-700 ring-1 ring-inset ring-emerald-600/10 dark:bg-emerald-500/10 dark:text-emerald-400 dark:ring-emerald-500/20">
-              <Award className="h-2.5 w-2.5" />
+            <span className="inline-flex items-center gap-1 rounded-lg bg-[var(--emerald-light)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--emerald)] ring-1 ring-inset ring-[var(--emerald)]/20">
               {contributor.role}
             </span>
           )}
         </div>
 
-        {/* Middle Row: Bio */}
+        {/* Bio */}
         {bioHtml && (
           <div
-            className="prose prose-sm prose-zinc mt-1.5 max-w-2xl line-clamp-2 text-sm leading-relaxed text-zinc-600 dark:prose-invert dark:text-zinc-400"
+            className="prose prose-sm max-w-2xl mt-2 line-clamp-2 text-sm leading-relaxed text-muted-foreground [&_a]:text-[var(--emerald)] [&_a]:no-underline [&_a]:hover:underline dark:prose-invert"
             dangerouslySetInnerHTML={{ __html: bioHtml }}
           />
         )}
 
-        {/* Bottom Row: Socials */}
+        {/* Social Links */}
         {contributor.social_profiles && (
           <div className="mt-3 flex flex-wrap gap-1.5">
             {Object.entries(contributor.social_profiles).map(([key, url]) => {
@@ -116,11 +118,11 @@ export function ContributorHeader({
                   href={url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-zinc-400 transition-all hover:bg-green-100 hover:text-green-900 dark:hover:bg-green-900 dark:hover:text-green-100"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-border/50 text-muted-foreground transition-all hover:bg-[var(--emerald-light)] hover:text-[var(--emerald)] hover:border-[var(--emerald)]/30"
                   title={key}
                   aria-label={`Visit ${key} profile (opens in new tab)`}
                 >
-                  <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+                  <Icon className="h-4 w-4" aria-hidden="true" />
                 </a>
               );
             })}

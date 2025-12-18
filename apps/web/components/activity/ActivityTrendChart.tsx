@@ -138,7 +138,8 @@ export function ActivityTrendChart({
     <svg
       width={width}
       height={height}
-      className="overflow-visible text-emerald-500 dark:text-emerald-400"
+      className="overflow-visible"
+      style={{ color: "var(--emerald)" }}
       role="img"
       aria-label={`Activity trend showing ${totalValue.toFixed(0)} total ${mode}`}
     >

@@ -25,15 +25,6 @@ export interface LeaderboardFiltersProps {
  *
  * @param props - Component props
  * @returns LeaderboardFilters component
- *
- * @example
- * ```tsx
- * <LeaderboardFilters
- *   searchQuery={searchQuery}
- *   onSearchChange={setSearchQuery}
- *   onClearFilters={clearFilters}
- * />
- * ```
  */
 export function LeaderboardFilters({
   searchQuery,
@@ -43,24 +34,29 @@ export function LeaderboardFilters({
   const hasActiveFilters = searchQuery.trim() !== "";
 
   return (
-    <div className="flex items-center gap-2 w-full sm:w-auto">
+    <div className="flex items-center gap-2 w-full sm:w-auto dark:bg-zinc-900">
       {/* Search Bar */}
-      <div className="relative flex-1 sm:flex-none">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      <div className="relative flex-1 sm:flex-none group">
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-[var(--emerald)] transition-colors" />
         <Input
           type="text"
           placeholder="Search contributors..."
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="pl-9 h-9 w-full sm:w-64"
+          className="pl-10 h-10 w-full sm:w-72 rounded-xl border-border/50 bg-secondary/30 placeholder:text-muted-foreground/70 focus:border-[var(--emerald)]/50 focus:ring-[var(--emerald)]/20 transition-all"
         />
       </div>
 
       {/* Clear Button */}
       {hasActiveFilters && (
-        <Button variant="ghost" size="sm" onClick={onClearFilters} className="shrink-0">
-          <X className="h-4 w-4 sm:mr-1" />
-          <span className="hidden sm:inline">Clear</span>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={onClearFilters} 
+          className="shrink-0 h-10 px-3 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary"
+        >
+          <X className="h-4 w-4" />
+          <span className="hidden sm:inline ml-1.5">Clear</span>
         </Button>
       )}
     </div>

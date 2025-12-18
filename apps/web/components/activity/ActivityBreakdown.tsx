@@ -11,18 +11,17 @@ import { Button, cn, Tooltip, TooltipContent, TooltipTrigger } from "@leaderboar
 import { DateRangeFilter } from "../shared/DateRangeFilter";
 import { ActivityTrendChart } from "./ActivityTrendChart";
 
-/** Color palette for different activity types */
 const COLORS = [
+  "bg-[var(--emerald)]",
+  "bg-[var(--gold)]",
   "bg-blue-500",
-  "bg-green-500",
   "bg-purple-500",
-  "bg-yellow-500",
   "bg-pink-500",
   "bg-indigo-500",
-  "bg-red-500",
   "bg-orange-500",
   "bg-teal-500",
   "bg-cyan-500",
+  "bg-rose-500",
 ];
 
 /**
@@ -54,11 +53,6 @@ export interface ActivityBreakdownProps {
  *
  * @param props - Component props
  * @returns ActivityBreakdown component
- *
- * @example
- * ```tsx
- * <ActivityBreakdown activities={activities} />
- * ```
  */
 export function ActivityBreakdown({
   activities,
@@ -68,7 +62,6 @@ export function ActivityBreakdown({
   const [filterStartDate, setFilterStartDate] = useState<string>("");
   const [filterEndDate, setFilterEndDate] = useState<string>("");
 
-  // Filter activities by date range
   const filteredActivities = useMemo(() => {
     if (!filterStartDate && !filterEndDate) {
       return activities;
@@ -92,7 +85,6 @@ export function ActivityBreakdown({
     });
   }, [activities, filterStartDate, filterEndDate]);
 
-  // Calculate breakdown by activity type
   const filteredBreakdown = useMemo(() => {
     return filteredActivities.reduce((acc, activity) => {
       const key = activity.activity_definition_name;
@@ -122,7 +114,6 @@ export function ActivityBreakdown({
 
   const hasActiveFilters = filterStartDate !== "" || filterEndDate !== "";
 
-  // Calculate date range
   const dateRange = useMemo(() => {
     if (initialStartDate && initialEndDate) {
       return { startDate: initialStartDate, endDate: initialEndDate };
@@ -143,7 +134,6 @@ export function ActivityBreakdown({
     };
   }, [filteredActivities, initialStartDate, initialEndDate]);
 
-  // Group activities by type and date for trend charts
   const activityTrendData = useMemo(() => {
     const trendMap: Record<
       string,
@@ -176,147 +166,120 @@ export function ActivityBreakdown({
     return trendMap;
   }, [filteredActivities]);
 
+  if (entries.length === 0) {
+    return (
+      <div className="text-center py-8 text-muted-foreground text-sm">
+        No activities to display
+      </div>
+    );
+  }
+
   return (
-    <div className="rounded-lg border bg-card">
-      <div className="p-6 border-b">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-semibold">Activity Breakdown</h2>
-            <p className="text-sm text-muted-foreground">
-              {totalActivities} total activities · {totalPoints} total points
-              {hasActiveFilters && " (filtered)"}
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            {hasActiveFilters && (
-              <Button variant="ghost" size="sm" onClick={clearFilters}>
-                <X className="h-4 w-4 mr-1" />
-                Clear
-              </Button>
-            )}
-            <DateRangeFilter
-              startDate={filterStartDate}
-              endDate={filterEndDate}
-              onStartDateChange={setFilterStartDate}
-              onEndDateChange={setFilterEndDate}
-              idPrefix="breakdown"
-            />
-          </div>
+    <div className="space-y-5">
+      {/* Header with filters */}
+      <div className="flex items-center justify-between gap-4">
+        <div className="text-xs text-muted-foreground">
+          <span className="text-[var(--emerald)] font-medium">{totalActivities}</span> activities · <span className="text-[var(--emerald)] font-medium">{totalPoints}</span> pts
+          {hasActiveFilters && " (filtered)"}
+        </div>
+        <div className="flex items-center gap-2">
+          {hasActiveFilters && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={clearFilters}
+              className="h-7 px-2 text-xs"
+            >
+              <X className="h-3 w-3 mr-1" />
+              Clear
+            </Button>
+          )}
+          <DateRangeFilter
+            startDate={filterStartDate}
+            endDate={filterEndDate}
+            onStartDateChange={setFilterStartDate}
+            onEndDateChange={setFilterEndDate}
+            idPrefix="breakdown"
+          />
         </div>
       </div>
-      <div className="p-6 space-y-6">
-        {/* Proportional Bar Chart */}
-        {totalPoints > 0 && (
-          <div className="space-y-3">
-            <div className="flex h-8 w-full overflow-hidden rounded-lg">
-              {entries.map(([activityName, data], index) => {
-                const percentage = (data.points / totalPoints) * 100;
-                return (
-                  <Tooltip key={activityName}>
-                    <TooltipTrigger asChild>
-                      <div
-                        className={cn(
-                          "transition-all hover:opacity-80 cursor-pointer",
-                          COLORS[index % COLORS.length]
-                        )}
-                        style={{ width: `${percentage}%` }}
-                      />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <div className="text-xs">
-                        <div className="font-medium">{activityName}</div>
-                        <div className="text-muted-foreground">
-                          {data.count} activities ({percentage.toFixed(1)}%)
-                        </div>
-                      </div>
-                    </TooltipContent>
-                  </Tooltip>
-                );
-              })}
-            </div>
 
-            {/* Legend with Trend Charts */}
-            <div className="grid grid-cols-1  gap-3">
-              {entries.map(([activityName, data], index) => {
-                const percentage = (data.count / totalActivities) * 100;
-                const trendData = activityTrendData[activityName] || [];
-
-                return (
-                  <div
-                    key={activityName}
-                    className="flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
-                  >
+      {/* Proportional Bar Chart */}
+      {totalPoints > 0 && (
+        <div className="space-y-4">
+          <div className="flex h-3 w-full overflow-hidden rounded-full bg-secondary/50">
+            {entries.map(([activityName, data], index) => {
+              const percentage = (data.points / totalPoints) * 100;
+              return (
+                <Tooltip key={activityName}>
+                  <TooltipTrigger asChild>
                     <div
                       className={cn(
-                        "w-4 h-4 rounded shrink-0",
+                        "transition-all duration-300 hover:opacity-80 cursor-pointer first:rounded-l-full last:rounded-r-full",
                         COLORS[index % COLORS.length]
                       )}
+                      style={{ width: `${percentage}%` }}
                     />
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium text-sm truncate">
-                        {activityName}
-                      </div>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <span>
-                          {data.count} ({percentage.toFixed(1)}%)
-                        </span>
-                        {data.points > 0 && (
-                          <>
-                            <span>·</span>
-                            <span className="text-primary font-medium">
-                              {data.points} pts
-                            </span>
-                          </>
-                        )}
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <div className="text-xs">
+                      <div className="font-medium">{activityName}</div>
+                      <div className="text-muted-foreground">
+                        {data.count} activities · {data.points} pts ({percentage.toFixed(1)}%)
                       </div>
                     </div>
-                    <div className="shrink-0">
-                      <ActivityTrendChart
-                        dailyActivity={trendData}
-                        startDate={dateRange.startDate}
-                        endDate={dateRange.endDate}
-                        mode="count"
-                      />
+                  </TooltipContent>
+                </Tooltip>
+              );
+            })}
+          </div>
+
+          {/* Legend with Trend Charts */}
+          <div className="space-y-2">
+            {entries.map(([activityName, data], index) => {
+              const percentage = (data.points / totalPoints) * 100;
+              const trendData = activityTrendData[activityName] || [];
+
+              return (
+                <div
+                  key={activityName}
+                  className="flex items-center gap-3 p-2.5 rounded-xl border border-border/30 bg-secondary/20 hover:bg-secondary/40 transition-colors"
+                >
+                  <div
+                    className={cn(
+                      "w-2.5 h-2.5 rounded-full shrink-0",
+                      COLORS[index % COLORS.length]
+                    )}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium text-sm truncate">
+                      {activityName}
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <span>{data.count}×</span>
+                      <span>·</span>
+                      <span className="text-[var(--emerald)] font-medium">
+                        +{data.points} pts
+                      </span>
+                      <span className="text-muted-foreground/50">
+                        ({percentage.toFixed(0)}%)
+                      </span>
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* Stats Summary */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-primary">
-              {totalActivities}
-            </div>
-            <div className="text-xs text-muted-foreground">
-              Total Activities
-            </div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-primary">{totalPoints}</div>
-            <div className="text-xs text-muted-foreground">Total Points</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-primary">
-              {entries.length}
-            </div>
-            <div className="text-xs text-muted-foreground">Activity Types</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-primary">
-              {totalActivities > 0
-                ? (totalPoints / totalActivities).toFixed(1)
-                : "0"}
-            </div>
-            <div className="text-xs text-muted-foreground">
-              Avg Points/Activity
-            </div>
+                  <div className="shrink-0">
+                    <ActivityTrendChart
+                      dailyActivity={trendData}
+                      startDate={dateRange.startDate}
+                      endDate={dateRange.endDate}
+                      mode="count"
+                    />
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
