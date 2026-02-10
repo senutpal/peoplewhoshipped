@@ -4,7 +4,7 @@
  */
 
 import Link from "next/link";
-import { Medal, Trophy, Crown } from "lucide-react";
+import { Medal, Crown } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback, cn } from "@leaderboard/ui";
 import type { LeaderboardEntry } from "@leaderboard/database";
 import { ActivityTrendChart } from "../activity/ActivityTrendChart";
@@ -23,8 +23,9 @@ export interface LeaderboardCardProps {
   readonly endDate: Date;
 }
 
-
-function getRankBadge(rank: number): { icon: React.ReactNode; gradient: string } | null {
+function getRankBadge(
+  rank: number,
+): { icon: React.ReactNode; gradient: string } | null {
   if (rank === 1) {
     return {
       icon: <Crown className="h-5 w-5 sm:h-6 sm:w-6" />,
@@ -65,15 +66,15 @@ export function LeaderboardCard({
     <div
       className={cn(
         "group relative rounded-2xl border bg-card p-4 sm:p-6 transition-all duration-300 hover:shadow-luxury",
-        isTopThree 
-          ? "border-[var(--gold)]/30 hover:border-[var(--gold)]/50" 
-          : "border-border/50 hover:border-[var(--emerald)]/30"
+        isTopThree
+          ? "border-[var(--gold)]/30 hover:border-[var(--gold)]/50"
+          : "border-border/50 hover:border-[var(--emerald)]/30",
       )}
     >
       {isTopThree && (
         <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[var(--gold-light)] to-transparent opacity-30 pointer-events-none" />
       )}
-      
+
       <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
         {/* Rank + Avatar Group */}
         <div className="flex items-center gap-3 sm:gap-4">
@@ -81,9 +82,9 @@ export function LeaderboardCard({
           <div
             className={cn(
               "flex items-center justify-center shrink-0 rounded-xl w-10 h-10 sm:w-12 sm:h-12",
-              rankBadge 
+              rankBadge
                 ? `bg-gradient-to-br ${rankBadge.gradient} text-white shadow-sm`
-                : "bg-secondary text-muted-foreground"
+                : "bg-secondary text-muted-foreground",
             )}
             aria-label={`Rank ${rank}`}
           >
@@ -148,7 +149,7 @@ export function LeaderboardCard({
           >
             @{entry.username}
           </Link>
-          
+
           {/* Activity Breakdown */}
           <div className="flex flex-wrap gap-1.5 lg:gap-2 mt-3">
             {Object.entries(entry.activity_breakdown)
@@ -159,8 +160,12 @@ export function LeaderboardCard({
                   key={activityName}
                   className="text-xs bg-secondary/70 px-2.5 py-1 rounded-lg"
                 >
-                  <span className="font-medium text-foreground">{activityName}</span>
-                  <span className="text-muted-foreground ml-1">×{data.count}</span>
+                  <span className="font-medium text-foreground">
+                    {activityName}
+                  </span>
+                  <span className="text-muted-foreground ml-1">
+                    ×{data.count}
+                  </span>
                   {data.points > 0 && (
                     <span className="text-[var(--emerald)] ml-1 font-medium">
                       +{data.points}
@@ -188,7 +193,9 @@ export function LeaderboardCard({
                   className="text-[11px] bg-secondary/70 px-2 py-0.5 rounded-md"
                 >
                   <span className="font-medium">{activityName}</span>
-                  <span className="text-muted-foreground ml-1">×{data.count}</span>
+                  <span className="text-muted-foreground ml-1">
+                    ×{data.count}
+                  </span>
                 </div>
               ))}
             {Object.entries(entry.activity_breakdown).length > 4 && (
