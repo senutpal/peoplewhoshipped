@@ -59,6 +59,12 @@ export async function getYamlConfig(configPath?: string): Promise<YamlConfig> {
     schema: yaml.JSON_SCHEMA,
   }) as YamlConfig;
 
+  if (rawConfig == null) {
+    throw new Error(
+      "Invalid configuration: file is empty or could not be parsed",
+    );
+  }
+
   // Basic validation
   if (!rawConfig.org || !rawConfig.meta || !rawConfig.leaderboard) {
     throw new Error(
@@ -69,60 +75,6 @@ export async function getYamlConfig(configPath?: string): Promise<YamlConfig> {
   cachedConfig = rawConfig;
   return cachedConfig;
 }
-
-/**
- * Clear the cached YAML configuration.
- * Useful for testing or when configuration needs to be reloaded.
- */
-export function clearYamlConfigCache(): void {
-  cachedConfig = null;
-}
-
-// =============================================================================
-// Role Helpers
-// =============================================================================
-
-/**
- * Get all role names that are marked as hidden.
- *
- * @param config - The YAML configuration object
- * @returns Array of hidden role slugs
- *
- * @example
- * ```typescript
- * const config = await getYamlConfig();
- * const hiddenRoles = getHiddenRoles(config);
- * // ["bot", "test"]
- * ```
- */
-export function getHiddenRoles(config: YamlConfig): string[] {
-  return Object.entries(config.leaderboard.roles)
-    .filter(([, roleConfig]) => roleConfig.hidden === true)
-    .map(([slug]) => slug);
-}
-
-/**
- * Get all role names that are not hidden.
- *
- * @param config - The YAML configuration object
- * @returns Array of visible role slugs
- *
- * @example
- * ```typescript
- * const config = await getYamlConfig();
- * const visibleRoles = getVisibleRoles(config);
- * // ["core", "contributor", "intern"]
- * ```
- */
-export function getVisibleRoles(config: YamlConfig): string[] {
-  return Object.entries(config.leaderboard.roles)
-    .filter(([, roleConfig]) => roleConfig.hidden !== true)
-    .map(([slug]) => slug);
-}
-
-// =============================================================================
-// Synchronous Loading (for compatibility)
-// =============================================================================
 
 /**
  * Load and parse the config.yaml file synchronously.
@@ -159,6 +111,12 @@ export function getYamlConfigSync(configPath?: string): YamlConfig {
   const rawConfig = yaml.load(fileContents, {
     schema: yaml.JSON_SCHEMA,
   }) as YamlConfig;
+
+  if (rawConfig == null) {
+    throw new Error(
+      "Invalid configuration: file is empty or could not be parsed",
+    );
+  }
 
   // Basic validation
   if (!rawConfig.org || !rawConfig.meta || !rawConfig.leaderboard) {

@@ -3,6 +3,7 @@
  * @module @leaderboard/web/app/[username]/opengraph-image
  */
 
+import React from "react";
 import { ImageResponse } from "next/og";
 import {
   getContributorProfile,
@@ -21,6 +22,58 @@ export const size = {
 export const contentType = "image/png";
 
 const config = getYamlConfigSync();
+
+interface OGImageProps {
+  params: Promise<{ username: string }>;
+}
+
+function AvatarWithFallback({
+  avatar_url,
+  name,
+  username,
+}: {
+  avatar_url?: string | null;
+  name?: string | null;
+  username: string;
+}): React.ReactElement {
+  const [hasError, setHasError] = React.useState(false);
+
+  if (avatar_url && !hasError) {
+    return (
+      <img
+        src={avatar_url}
+        alt={name || username}
+        width={180}
+        height={180}
+        style={{
+          borderRadius: "50%",
+          border: "6px solid #4AE3A8",
+        }}
+        onError={() => setHasError(true)}
+      />
+    );
+  }
+
+  return (
+    <div
+      style={{
+        width: "180px",
+        height: "180px",
+        borderRadius: "50%",
+        background: "#4AE3A8",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: "72px",
+        fontWeight: "bold",
+        color: "#0A0908",
+        border: "6px solid #2D7A5F",
+      }}
+    >
+      {(name || username).substring(0, 2).toUpperCase()}
+    </div>
+  );
+}
 
 /**
  * Generate static params for all contributors.
@@ -98,38 +151,11 @@ export default async function OGImage({
           marginBottom: "40px",
         }}
       >
-        {contributor.avatar_url ? (
-          <img
-            src={contributor.avatar_url}
-            alt={contributor.name || contributor.username}
-            width={180}
-            height={180}
-            style={{
-              borderRadius: "50%",
-              border: "6px solid #4AE3A8",
-            }}
-          />
-        ) : (
-          <div
-            style={{
-              width: "180px",
-              height: "180px",
-              borderRadius: "50%",
-              background: "#4AE3A8",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "72px",
-              fontWeight: "bold",
-              color: "#0A0908",
-              border: "6px solid #2D7A5F",
-            }}
-          >
-            {(contributor.name || contributor.username)
-              .substring(0, 2)
-              .toUpperCase()}
-          </div>
-        )}
+        <AvatarWithFallback
+          avatar_url={contributor.avatar_url}
+          name={contributor.name}
+          username={contributor.username}
+        />
       </div>
 
       {/* Name */}

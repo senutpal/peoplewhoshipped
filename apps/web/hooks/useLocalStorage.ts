@@ -37,7 +37,11 @@ export function useLocalStorage<T>(
     try {
       const item = window.localStorage.getItem(key);
       return item ? (JSON.parse(item) as T) : initialValue;
-    } catch {
+    } catch (error) {
+      console.warn(
+        `useLocalStorage: failed to read "${key}" from localStorage`,
+        error,
+      );
       return initialValue;
     }
   });
@@ -50,15 +54,17 @@ export function useLocalStorage<T>(
 
     try {
       window.localStorage.setItem(key, JSON.stringify(storedValue));
-    } catch {}
+    } catch (error) {
+      console.error(
+        `useLocalStorage: failed to write "${key}" to localStorage`,
+        error,
+      );
+    }
   }, [key, storedValue]);
 
   // Wrapped setter to support both direct values and updater functions
   const setValue = useCallback((value: T | ((prev: T) => T)) => {
-    setStoredValue((prev) => {
-      const newValue = value instanceof Function ? value(prev) : value;
-      return newValue;
-    });
+    setStoredValue((prev) => (value instanceof Function ? value(prev) : value));
   }, []);
 
   return [storedValue, setValue];

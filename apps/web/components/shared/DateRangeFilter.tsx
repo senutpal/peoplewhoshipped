@@ -46,7 +46,7 @@ export function DateRangeFilter({
 }: DateRangeFilterProps): React.ReactElement {
   const hasDateFilter = startDate !== "" || endDate !== "";
 
-  const today = new Date().toISOString().split("T")[0];
+  const today = new Date().toLocaleDateString("en-CA");
 
   const handleStartDateChange = (date: string) => {
     onStartDateChange(date);
