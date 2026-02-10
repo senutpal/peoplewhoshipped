@@ -128,3 +128,39 @@ export function getYamlConfigSync(configPath?: string): YamlConfig {
   cachedConfig = rawConfig;
   return cachedConfig;
 }
+
+/**
+ * Clear the cached YAML configuration.
+ * Useful for testing or when configuration needs to be reloaded.
+ */
+export function clearYamlConfigCache(): void {
+  cachedConfig = null;
+}
+
+// =============================================================================
+// Role Helpers
+// =============================================================================
+
+/**
+ * Get all role names that are marked as hidden.
+ *
+ * @param config - The YAML configuration object
+ * @returns Array of hidden role slugs
+ */
+export function getHiddenRoles(config: YamlConfig): string[] {
+  return Object.entries(config.leaderboard.roles)
+    .filter(([, roleConfig]) => roleConfig.hidden === true)
+    .map(([slug]) => slug);
+}
+
+/**
+ * Get all role names that are not hidden.
+ *
+ * @param config - The YAML configuration object
+ * @returns Array of visible role slugs
+ */
+export function getVisibleRoles(config: YamlConfig): string[] {
+  return Object.entries(config.leaderboard.roles)
+    .filter(([, roleConfig]) => roleConfig.hidden !== true)
+    .map(([slug]) => slug);
+}
