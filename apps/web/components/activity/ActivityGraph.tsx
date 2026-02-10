@@ -73,6 +73,9 @@ function getLevelColor(level: number): string {
  */
 function formatDate(dateStr: string): string {
   const date = new Date(dateStr);
+  if (isNaN(date.getTime())) {
+    return "Invalid date";
+  }
   return date.toLocaleDateString("en-US", {
     weekday: "short",
     month: "short",
@@ -93,7 +96,9 @@ export function ActivityGraph({
   activityDefinitions,
   onFilterChange,
 }: ActivityGraphProps): React.ReactElement {
-  const [selectedActivityTypes, setSelectedActivityTypes] = useState<Set<string>>(new Set());
+  const [selectedActivityTypes, setSelectedActivityTypes] = useState<
+    Set<string>
+  >(new Set());
   const [totalCount, setTotalCount] = useState(0);
 
   // Group activities by date for tooltip display
@@ -119,7 +124,7 @@ export function ActivityGraph({
     }
 
     const filteredActivities = activities.filter((activity) =>
-      typesToInclude.has(activity.activity_definition_name)
+      typesToInclude.has(activity.activity_definition_name),
     );
 
     const activityByDate: Record<string, number> = {};
@@ -129,7 +134,8 @@ export function ActivityGraph({
       const dateKey = new Date(activity.occured_at).toISOString().split("T")[0];
       if (dateKey) {
         activityByDate[dateKey] = (activityByDate[dateKey] || 0) + 1;
-        if (!activityBreakdownByDate[dateKey]) activityBreakdownByDate[dateKey] = {};
+        if (!activityBreakdownByDate[dateKey])
+          activityBreakdownByDate[dateKey] = {};
         const typeName = activity.activity_definition_name;
         activityBreakdownByDate[dateKey][typeName] =
           (activityBreakdownByDate[dateKey][typeName] || 0) + 1;
@@ -171,18 +177,21 @@ export function ActivityGraph({
     return result;
   }, [filteredData.data]);
 
-  const toggleFilter = useCallback((type: string) => {
-    setSelectedActivityTypes((prev) => {
-      const next = new Set(prev);
-      if (next.has(type)) {
-        next.delete(type);
-      } else {
-        next.add(type);
-      }
-      onFilterChange?.(next);
-      return next;
-    });
-  }, [onFilterChange]);
+  const toggleFilter = useCallback(
+    (type: string) => {
+      setSelectedActivityTypes((prev) => {
+        const next = new Set(prev);
+        if (next.has(type)) {
+          next.delete(type);
+        } else {
+          next.add(type);
+        }
+        onFilterChange?.(next);
+        return next;
+      });
+    },
+    [onFilterChange],
+  );
 
   return (
     <div className="flex flex-col gap-6 w-full p-6 bg-white dark:bg-black rounded-3xl border border-zinc-100 dark:border-zinc-900 shadow-sm">
@@ -202,7 +211,8 @@ export function ActivityGraph({
           <div className="flex flex-wrap gap-1.5">
             {activityDefinitions.map((def) => {
               const isActive =
-                selectedActivityTypes.size === 0 || selectedActivityTypes.has(def.name);
+                selectedActivityTypes.size === 0 ||
+                selectedActivityTypes.has(def.name);
               return (
                 <button
                   key={def.name}
@@ -211,7 +221,7 @@ export function ActivityGraph({
                     "px-2.5 py-1 text-[10px] uppercase tracking-wider font-semibold rounded-full transition-all duration-200 border",
                     isActive
                       ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-900/50"
-                      : "bg-transparent text-zinc-400 border-zinc-100 dark:border-zinc-800 hover:text-zinc-600 dark:hover:text-zinc-300"
+                      : "bg-transparent text-zinc-400 border-zinc-100 dark:border-zinc-800 hover:text-zinc-600 dark:hover:text-zinc-300",
                   )}
                 >
                   {def.name}
@@ -242,10 +252,10 @@ export function ActivityGraph({
                         className={cn(
                           "w-2.5 h-2.5 rounded-[2px] transition-all duration-300 ease-out",
                           getLevelColor(day.level),
-                          "hover:scale-125 hover:z-10 hover:shadow-sm dark:hover:shadow-emerald-900/50"
+                          "hover:scale-125 hover:z-10 hover:shadow-sm dark:hover:shadow-emerald-900/50",
                         )}
                         style={{
-                          animation: "fadeIn 0.5s ease-out forwards",
+                          animation: "fadeInScale 0.5s ease-out forwards",
                           opacity: 0,
                           animationDelay: `${weekIndex * 15 + dayIndex * 10}ms`,
                         }}
@@ -263,7 +273,9 @@ export function ActivityGraph({
                           <span className="text-sm">No activity</span>
                         ) : (
                           <>
-                            <span className="text-sm">{day.count} activities</span>
+                            <span className="text-sm">
+                              {day.count} activities
+                            </span>
                             {Object.entries(day.activityBreakdown).map(
                               ([type, count]) => (
                                 <span
@@ -272,7 +284,7 @@ export function ActivityGraph({
                                 >
                                   {count} {type}
                                 </span>
-                              )
+                              ),
                             )}
                           </>
                         )}
@@ -285,11 +297,12 @@ export function ActivityGraph({
           </div>
         </div>
       </div>
-     
 
       {/* Legend */}
       <div className="flex items-center justify-between pt-2 border-t border-zinc-100 dark:border-zinc-900">
-        <span className="text-[10px] text-zinc-400 font-medium">Activity Level</span>
+        <span className="text-[10px] text-zinc-400 font-medium">
+          Activity Level
+        </span>
         <div className="flex items-center gap-1.5">
           {[0, 1, 2, 3, 4].map((level) => (
             <div
@@ -300,20 +313,6 @@ export function ActivityGraph({
           ))}
         </div>
       </div>
-      
-      <style jsx global>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: scale(0.9); }
-          to { opacity: 1; transform: scale(1); }
-        }
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-        }
-        .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-      `}</style>
     </div>
   );
 }
