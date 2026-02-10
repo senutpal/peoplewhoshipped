@@ -6,7 +6,7 @@
  * for the leaderboard system.
  */
 
-import { formatDistanceToNow, subDays, startOfDay, endOfDay } from "date-fns";
+import { formatDistanceToNow, subDays } from "date-fns";
 
 // =============================================================================
 // Types
@@ -44,13 +44,11 @@ export function getDateRange(period: DateRangePeriod): {
   startDate: Date;
   endDate: Date;
 } {
-  const endDate = endOfDay(new Date());
+  const endDate = new Date();
   const days = DAY_MULTIPLIERS[period];
+  const startDate = subDays(endDate, days);
 
-  return {
-    startDate: startOfDay(subDays(endDate, days)),
-    endDate,
-  };
+  return { startDate, endDate };
 }
 
 // =============================================================================
