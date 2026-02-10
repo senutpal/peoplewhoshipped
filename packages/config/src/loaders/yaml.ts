@@ -85,6 +85,11 @@ export async function getYamlConfig(configPath?: string): Promise<YamlConfig> {
   }
 
   const resolvedPath = resolveConfigPath(configPath);
+
+  if (!existsSync(resolvedPath)) {
+    throw new Error(`Configuration file not found: ${resolvedPath}`);
+  }
+
   const fileContents = readFileSync(resolvedPath, "utf8");
   const jsYaml = await getYaml();
 
@@ -114,6 +119,11 @@ export function getYamlConfigSync(configPath?: string): YamlConfig {
   }
 
   const resolvedPath = resolveConfigPath(configPath);
+
+  if (!existsSync(resolvedPath)) {
+    throw new Error(`Configuration file not found: ${resolvedPath}`);
+  }
+
   const fileContents = readFileSync(resolvedPath, "utf8");
 
   const jsYaml = require("js-yaml");
