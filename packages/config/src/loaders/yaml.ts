@@ -4,12 +4,8 @@
  */
 
 import { readFileSync, existsSync } from "fs";
-import { join, dirname } from "path";
+import { join, isAbsolute, resolve } from "path";
 import type { YamlConfig } from "../types/yaml";
-
-// =============================================================================
-// YAML Parsing (using js-yaml dynamically)
-// =============================================================================
 
 let yaml: typeof import("js-yaml") | null = null;
 
@@ -20,20 +16,58 @@ async function getYaml() {
   return yaml;
 }
 
-// =============================================================================
-// Configuration Cache
-// =============================================================================
-
 let cachedConfig: YamlConfig | null = null;
 
-// =============================================================================
-// Configuration Paths
-// =============================================================================
+function resolvePath(inputPath: string): string {
+  return isAbsolute(inputPath) ? inputPath : resolve(process.cwd(), inputPath);
+}
 
 function findConfigPath(): string {
+  const dataPath = resolvePath(process.env.LEADERBOARD_DATA_PATH || "./data");
+  const configPath = join(dataPath, "leaderboard", "config.yaml");
+
+  if (existsSync(configPath)) {
+    return configPath;
+  }
+
+  let projectRoot = process.cwd();
+
+  const packagePath = join(__dirname, "..", "..", "..");
+  if (existsSync(join(packagePath, "data", "leaderboard", "config.yaml"))) {
+    projectRoot = packagePath;
+  } else {
+    for (let i = 0; i < 5; i++) {
+      const parent = join(projectRoot, "..");
+      if (existsSync(join(parent, "data", "leaderboard", "config.yaml"))) {
+        projectRoot = parent;
+        break;
+      }
+      if (parent === projectRoot) break;
+      projectRoot = parent;
+    }
+  }
+
+  const fallbackPath = join(projectRoot, "data", "leaderboard", "config.yaml");
+  if (existsSync(fallbackPath)) {
+    return fallbackPath;
+  }
+
+  throw new Error(
+    `Configuration file not found. Checked paths:\n` +
+      `- ${configPath}\n` +
+      `- ${fallbackPath}\n` +
+      `Make sure data/leaderboard/config.yaml exists or LEADERBOARD_DATA_PATH is set correctly.`,
+  );
+}
+
+function resolveConfigPath(configPath?: string): string {
+  if (configPath) {
+    return resolvePath(configPath);
+  }
+
   if (process.env.LEADERBOARD_DATA_PATH) {
     const envPath = join(
-      process.env.LEADERBOARD_DATA_PATH,
+      resolvePath(process.env.LEADERBOARD_DATA_PATH),
       "leaderboard",
       "config.yaml",
     );
@@ -42,51 +76,8 @@ function findConfigPath(): string {
     }
   }
 
-  const possiblePaths = [
-    join(process.cwd(), "data", "leaderboard", "config.yaml"),
-    join(process.cwd(), "..", "data", "leaderboard", "config.yaml"),
-    join(__dirname, "..", "..", "..", "data", "leaderboard", "config.yaml"),
-    join(__dirname, "..", "..", "data", "leaderboard", "config.yaml"),
-    join(
-      __dirname,
-      "..",
-      "..",
-      "..",
-      "..",
-      "data",
-      "leaderboard",
-      "config.yaml",
-    ),
-  ];
-
-  for (const path of possiblePaths) {
-    if (existsSync(path)) {
-      return path;
-    }
-  }
-
-  return join(process.cwd(), "config.yaml");
-}
-
-function resolveConfigPath(configPath?: string): string {
-  if (configPath) {
-    return configPath;
-  }
-
-  if (process.env.LEADERBOARD_DATA_PATH) {
-    return join(
-      process.env.LEADERBOARD_DATA_PATH,
-      "leaderboard",
-      "config.yaml",
-    );
-  }
-
   return findConfigPath();
 }
-
-// =============================================================================
-// Async Loading
-// =============================================================================
 
 export async function getYamlConfig(configPath?: string): Promise<YamlConfig> {
   if (cachedConfig) {
@@ -94,11 +85,6 @@ export async function getYamlConfig(configPath?: string): Promise<YamlConfig> {
   }
 
   const resolvedPath = resolveConfigPath(configPath);
-
-  if (!existsSync(resolvedPath)) {
-    throw new Error(`Configuration file not found: ${resolvedPath}`);
-  }
-
   const fileContents = readFileSync(resolvedPath, "utf8");
   const jsYaml = await getYaml();
 
@@ -122,21 +108,12 @@ export async function getYamlConfig(configPath?: string): Promise<YamlConfig> {
   return cachedConfig;
 }
 
-// =============================================================================
-// Synchronous Loading
-// =============================================================================
-
 export function getYamlConfigSync(configPath?: string): YamlConfig {
   if (cachedConfig) {
     return cachedConfig;
   }
 
   const resolvedPath = resolveConfigPath(configPath);
-
-  if (!existsSync(resolvedPath)) {
-    throw new Error(`Configuration file not found: ${resolvedPath}`);
-  }
-
   const fileContents = readFileSync(resolvedPath, "utf8");
 
   const jsYaml = require("js-yaml");
@@ -161,17 +138,9 @@ export function getYamlConfigSync(configPath?: string): YamlConfig {
   return cachedConfig;
 }
 
-// =============================================================================
-// Cache Management
-// =============================================================================
-
 export function clearYamlConfigCache(): void {
   cachedConfig = null;
 }
-
-// =============================================================================
-// Role Helpers
-// =============================================================================
 
 export function getHiddenRoles(config: YamlConfig): string[] {
   return Object.entries(config.leaderboard.roles)
