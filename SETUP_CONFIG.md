@@ -55,12 +55,6 @@ bun run contributors:generate
 
 this fetches all contributors from your github org and creates files for them.
 
-or run the auto-generator:
-
-```bash
-bun run contributors:generate
-```
-
 ## activity types
 
 | activity       | points |
