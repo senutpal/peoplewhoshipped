@@ -74,3 +74,6 @@ pglite-db/
 db-data/
 data/pglite/
 data/static/
+
+# App config (copied during build)
+apps/web/config.yaml
