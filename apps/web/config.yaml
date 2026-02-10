@@ -1,0 +1,45 @@
+# peoplewhoshipped configuration - edit these values for your organization
+
+org:
+  name: YOUR_ORG_NAME
+  description: your organization description
+  url: https://your-org.com
+  logo_url: https://your-logo.png
+  start_date: 2024-01-01
+  socials:
+    github: https://github.com/your-org
+
+meta:
+  title: Leaderboard - YOUR_ORG_NAME
+  description: track weekly contributions across contributors
+  site_url: https://leaderboard.your-org.com
+  image_url: https://your-og-image.png
+  favicon_url: https://your-favicon.ico
+
+leaderboard:
+  data_source: local
+  roles:
+    core:
+      name: Core Team
+      description: core team member
+    contributor:
+      name: Contributor
+      description: open source contributor
+    bot:
+      name: Bot
+      description: bot account
+      hidden: true
+  top_contributors:
+    - pr_merged
+    - pr_opened
+    - eod_update
+    - pr_reviewed
+  social_profiles:
+    github:
+      icon: github
+    linkedin:
+      icon: linkedin
+    twitter:
+      icon: twitter
+    email:
+      icon: mail

@@ -78,8 +78,6 @@ export default defineConfig({
 
     /** Consistent viewport */
     viewport: { width: 1280, height: 720 },
-
-
   },
 
   // ==========================================================================
@@ -117,13 +115,10 @@ export default defineConfig({
   // ==========================================================================
 
   webServer: {
-    // Build and serve the production app (NOT the dev server - HMR breaks E2E tests)
-    command: "bun run --filter @leaderboard/web build && bun run --filter @leaderboard/web start",
+    command: "cd apps/web && bun run build && bun run start",
     url: "http://localhost:3000",
-    // Always start a fresh production server - dev server with HMR causes timeouts
-    // Set PLAYWRIGHT_REUSE_SERVER=true to reuse an existing production server
     reuseExistingServer: !!process.env.PLAYWRIGHT_REUSE_SERVER,
-    timeout: 180000, // 3 minutes to build and start
+    timeout: 300000,
   },
 
   // ==========================================================================

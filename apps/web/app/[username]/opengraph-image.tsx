@@ -3,7 +3,6 @@
  * @module @leaderboard/web/app/[username]/opengraph-image
  */
 
-import React from "react";
 import { ImageResponse } from "next/og";
 import {
   getContributorProfile,
@@ -11,7 +10,6 @@ import {
 } from "@/lib/static-data";
 import { getYamlConfigSync } from "@leaderboard/config";
 
-/** Image runtime configuration */
 export const runtime = "nodejs";
 export const dynamic = "force-static";
 export const alt = "Contributor Profile";
@@ -23,61 +21,6 @@ export const contentType = "image/png";
 
 const config = getYamlConfigSync();
 
-interface OGImageProps {
-  params: Promise<{ username: string }>;
-}
-
-function AvatarWithFallback({
-  avatar_url,
-  name,
-  username,
-}: {
-  avatar_url?: string | null;
-  name?: string | null;
-  username: string;
-}): React.ReactElement {
-  const [hasError, setHasError] = React.useState(false);
-
-  if (avatar_url && !hasError) {
-    return (
-      <img
-        src={avatar_url}
-        alt={name || username}
-        width={180}
-        height={180}
-        style={{
-          borderRadius: "50%",
-          border: "6px solid #4AE3A8",
-        }}
-        onError={() => setHasError(true)}
-      />
-    );
-  }
-
-  return (
-    <div
-      style={{
-        width: "180px",
-        height: "180px",
-        borderRadius: "50%",
-        background: "#4AE3A8",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontSize: "72px",
-        fontWeight: "bold",
-        color: "#0A0908",
-        border: "6px solid #2D7A5F",
-      }}
-    >
-      {(name || username).substring(0, 2).toUpperCase()}
-    </div>
-  );
-}
-
-/**
- * Generate static params for all contributors.
- */
 export async function generateStaticParams(): Promise<
   Array<{ username: string }>
 > {
@@ -85,19 +28,10 @@ export async function generateStaticParams(): Promise<
   return usernames.map((username) => ({ username }));
 }
 
-/**
- * Props for the OG image component.
- */
 interface OGImageProps {
   params: Promise<{ username: string }>;
 }
 
-/**
- * Generate OpenGraph image for a contributor profile.
- *
- * @param props - Component props
- * @returns ImageResponse with OG image
- */
 export default async function OGImage({
   params,
 }: OGImageProps): Promise<ImageResponse> {
@@ -124,7 +58,6 @@ export default async function OGImage({
     );
   }
 
-  // Calculate activity total
   const activities = Object.values(activityByDate).reduce(
     (sum, count) => sum + count,
     0,
@@ -144,21 +77,46 @@ export default async function OGImage({
         fontFamily: "system-ui, sans-serif",
       }}
     >
-      {/* Avatar */}
       <div
         style={{
           display: "flex",
           marginBottom: "40px",
         }}
       >
-        <AvatarWithFallback
-          avatar_url={contributor.avatar_url}
-          name={contributor.name}
-          username={contributor.username}
-        />
+        {contributor.avatar_url ? (
+          <img
+            src={contributor.avatar_url}
+            alt={contributor.name || contributor.username}
+            width={180}
+            height={180}
+            style={{
+              borderRadius: "50%",
+              border: "6px solid #4AE3A8",
+            }}
+          />
+        ) : (
+          <div
+            style={{
+              width: "180px",
+              height: "180px",
+              borderRadius: "50%",
+              background: "#4AE3A8",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "72px",
+              fontWeight: "bold",
+              color: "#0A0908",
+              border: "6px solid #2D7A5F",
+            }}
+          >
+            {(contributor.name || contributor.username)
+              .substring(0, 2)
+              .toUpperCase()}
+          </div>
+        )}
       </div>
 
-      {/* Name */}
       <div
         style={{
           fontSize: "56px",
@@ -172,7 +130,6 @@ export default async function OGImage({
         {contributor.name || contributor.username}
       </div>
 
-      {/* Username */}
       <div
         style={{
           fontSize: "32px",
@@ -184,7 +141,6 @@ export default async function OGImage({
         @{contributor.username}
       </div>
 
-      {/* Stats */}
       <div
         style={{
           display: "flex",
@@ -252,7 +208,6 @@ export default async function OGImage({
         </div>
       </div>
 
-      {/* Organization */}
       <div
         style={{
           fontSize: "24px",
