@@ -26,7 +26,7 @@ import { useState, useEffect, useCallback } from "react";
  */
 export function useLocalStorage<T>(
   key: string,
-  initialValue: T
+  initialValue: T,
 ): [T, (value: T | ((prev: T) => T)) => void] {
   // Get initial value from localStorage or use default
   const [storedValue, setStoredValue] = useState<T>(() => {
@@ -37,8 +37,7 @@ export function useLocalStorage<T>(
     try {
       const item = window.localStorage.getItem(key);
       return item ? (JSON.parse(item) as T) : initialValue;
-    } catch (error) {
-      console.warn(`Error reading localStorage key "${key}":`, error);
+    } catch {
       return initialValue;
     }
   });
@@ -51,21 +50,16 @@ export function useLocalStorage<T>(
 
     try {
       window.localStorage.setItem(key, JSON.stringify(storedValue));
-    } catch (error) {
-      console.warn(`Error writing localStorage key "${key}":`, error);
-    }
+    } catch {}
   }, [key, storedValue]);
 
   // Wrapped setter to support both direct values and updater functions
-  const setValue = useCallback(
-    (value: T | ((prev: T) => T)) => {
-      setStoredValue((prev) => {
-        const newValue = value instanceof Function ? value(prev) : value;
-        return newValue;
-      });
-    },
-    []
-  );
+  const setValue = useCallback((value: T | ((prev: T) => T)) => {
+    setStoredValue((prev) => {
+      const newValue = value instanceof Function ? value(prev) : value;
+      return newValue;
+    });
+  }, []);
 
   return [storedValue, setValue];
 }
