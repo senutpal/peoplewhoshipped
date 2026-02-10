@@ -7,7 +7,7 @@
    - `GITHUB_ORG`
    - `GITHUB_TOKEN`
    - `PGLITE_DB_PATH` (set to `./data/pglite`)
-   - `LEADERBOARD_DATA_PATH` (set to `./data`)
+   - `LEADERBOARD_DATA_PATH` (set to `./data` if committing data folder to repo)
 3. deploy settings:
    - root directory: `apps/web`
    - build command: `bunx --bun next build`
