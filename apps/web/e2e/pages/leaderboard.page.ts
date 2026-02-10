@@ -57,9 +57,11 @@ export class LeaderboardPage {
   async waitForLoad() {
     await this.page.waitForLoadState("domcontentloaded");
     // Wait for any loading spinners to disappear
-    await expect(this.loadingSpinner).toHaveCount(0, { timeout: 10000 }).catch(() => {
-      // Ignore if no spinner exists
-    });
+    await expect(this.loadingSpinner)
+      .toHaveCount(0, { timeout: 10000 })
+      .catch(() => {
+        // Ignore if no spinner exists
+      });
   }
 
   /**
@@ -97,7 +99,11 @@ export class LeaderboardPage {
   async searchContributor(query: string) {
     if (await this.searchInput.isVisible()) {
       await this.searchInput.fill(query);
-      await this.page.waitForTimeout(300); // Debounce
+      await this.page
+        .waitForSelector("[data-testid='contributor-card']", {
+          state: "attached",
+        })
+        .catch(() => {});
     }
   }
 
