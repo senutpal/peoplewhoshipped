@@ -6,14 +6,7 @@
  * for the leaderboard system.
  */
 
-import {
-  formatDistanceToNow,
-  subDays,
-  subMonths,
-  subYears,
-  startOfDay,
-  endOfDay,
-} from "date-fns";
+import { formatDistanceToNow, subDays, startOfDay, endOfDay } from "date-fns";
 
 // =============================================================================
 // Types
@@ -28,6 +21,12 @@ export type DateRangePeriod = "week" | "month" | "year";
 // Date Range Functions
 // =============================================================================
 
+const DAY_MULTIPLIERS: Record<DateRangePeriod, number> = {
+  week: 7,
+  month: 30,
+  year: 365,
+};
+
 /**
  * Get date range for a specific period.
  *
@@ -39,10 +38,6 @@ export type DateRangePeriod = "week" | "month" | "year";
  * const { startDate, endDate } = getDateRange("week");
  * // startDate: 7 days ago
  * // endDate: now
- *
- * const { startDate, endDate } = getDateRange("month");
- * // startDate: 1 month ago
- * // endDate: now
  * ```
  */
 export function getDateRange(period: DateRangePeriod): {
@@ -50,24 +45,12 @@ export function getDateRange(period: DateRangePeriod): {
   endDate: Date;
 } {
   const endDate = endOfDay(new Date());
+  const days = DAY_MULTIPLIERS[period];
 
-  switch (period) {
-    case "week":
-      return {
-        startDate: startOfDay(subDays(endDate, 7)),
-        endDate,
-      };
-    case "month":
-      return {
-        startDate: startOfDay(subMonths(endDate, 1)),
-        endDate,
-      };
-    case "year":
-      return {
-        startDate: startOfDay(subYears(endDate, 1)),
-        endDate,
-      };
-  }
+  return {
+    startDate: startOfDay(subDays(endDate, days)),
+    endDate,
+  };
 }
 
 // =============================================================================
