@@ -1,18 +1,18 @@
 # peoplewhoshipped configuration - edit these values for your organization
 
 org:
-  name: YOUR_ORG_NAME
-  description: your organization description
-  url: https://your-org.com
-  logo_url: https://your-logo.png
+  name: CircuitVerse
+  description: Open Source Circuit Simulator
+  url: https://circuitverse.org
+  logo_url: https://github.com/CircuitVerse.png
   start_date: 2024-01-01
   socials:
-    github: https://github.com/your-org
+    github: https://github.com/CircuitVerse
 
 meta:
-  title: Leaderboard - YOUR_ORG_NAME
-  description: track weekly contributions across contributors
-  site_url: https://leaderboard.your-org.com
+  title: Leaderboard - CircuitVerse
+  description: Track contributions across contributors
+  site_url: https://circuitverse.org
   image_url: https://your-og-image.png
   favicon_url: https://your-favicon.ico
 
