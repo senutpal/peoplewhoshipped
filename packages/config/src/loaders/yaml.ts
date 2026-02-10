@@ -8,21 +8,8 @@
 
 import { readFileSync, existsSync } from "fs";
 import { join } from "path";
+import yaml from "js-yaml";
 import type { YamlConfig } from "../types/yaml";
-
-// =============================================================================
-// YAML Parsing (using js-yaml dynamically)
-// =============================================================================
-
-// Note: js-yaml is imported dynamically to avoid bundling issues
-let yaml: typeof import("js-yaml") | null = null;
-
-async function getYaml() {
-  if (!yaml) {
-    yaml = await import("js-yaml");
-  }
-  return yaml;
-}
 
 // =============================================================================
 // Configuration Cache
@@ -56,9 +43,10 @@ export async function getYamlConfig(configPath?: string): Promise<YamlConfig> {
 
   // Use LEADERBOARD_DATA_PATH if set, otherwise fall back to CWD
   const dataPath = process.env.LEADERBOARD_DATA_PATH;
-  const resolvedPath = configPath ?? 
-    (dataPath 
-      ? join(dataPath, "leaderboard", "config.yaml") 
+  const resolvedPath =
+    configPath ??
+    (dataPath
+      ? join(dataPath, "leaderboard", "config.yaml")
       : join(process.cwd(), "config.yaml"));
 
   if (!existsSync(resolvedPath)) {
@@ -66,16 +54,15 @@ export async function getYamlConfig(configPath?: string): Promise<YamlConfig> {
   }
 
   const fileContents = readFileSync(resolvedPath, "utf8");
-  const jsYaml = await getYaml();
-  
-  const rawConfig = jsYaml.load(fileContents, {
-    schema: jsYaml.JSON_SCHEMA,
+
+  const rawConfig = yaml.load(fileContents, {
+    schema: yaml.JSON_SCHEMA,
   }) as YamlConfig;
 
   // Basic validation
   if (!rawConfig.org || !rawConfig.meta || !rawConfig.leaderboard) {
     throw new Error(
-      "Invalid configuration: missing required sections (org, meta, leaderboard)"
+      "Invalid configuration: missing required sections (org, meta, leaderboard)",
     );
   }
 
@@ -157,9 +144,10 @@ export function getYamlConfigSync(configPath?: string): YamlConfig {
 
   // Use LEADERBOARD_DATA_PATH if set, otherwise fall back to CWD
   const dataPath = process.env.LEADERBOARD_DATA_PATH;
-  const resolvedPath = configPath ?? 
-    (dataPath 
-      ? join(dataPath, "leaderboard", "config.yaml") 
+  const resolvedPath =
+    configPath ??
+    (dataPath
+      ? join(dataPath, "leaderboard", "config.yaml")
       : join(process.cwd(), "config.yaml"));
 
   if (!existsSync(resolvedPath)) {
@@ -167,19 +155,15 @@ export function getYamlConfigSync(configPath?: string): YamlConfig {
   }
 
   const fileContents = readFileSync(resolvedPath, "utf8");
-  
-  // Use require for synchronous loading (Bun/Node compatible)
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const jsYaml = require("js-yaml");
-  
-  const rawConfig = jsYaml.load(fileContents, {
-    schema: jsYaml.JSON_SCHEMA,
+
+  const rawConfig = yaml.load(fileContents, {
+    schema: yaml.JSON_SCHEMA,
   }) as YamlConfig;
 
   // Basic validation
   if (!rawConfig.org || !rawConfig.meta || !rawConfig.leaderboard) {
     throw new Error(
-      "Invalid configuration: missing required sections (org, meta, leaderboard)"
+      "Invalid configuration: missing required sections (org, meta, leaderboard)",
     );
   }
 
