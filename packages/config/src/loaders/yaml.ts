@@ -1,15 +1,24 @@
 /**
  * @fileoverview YAML configuration loader and validator
  * @module @leaderboard/config/loaders/yaml
- *
- * This module provides functions for loading and validating YAML
- * configuration files with JSON schema validation.
  */
 
 import { readFileSync, existsSync } from "fs";
-import { join } from "path";
-import yaml from "js-yaml";
+import { join, dirname } from "path";
 import type { YamlConfig } from "../types/yaml";
+
+// =============================================================================
+// YAML Parsing (using js-yaml dynamically)
+// =============================================================================
+
+let yaml: typeof import("js-yaml") | null = null;
+
+async function getYaml() {
+  if (!yaml) {
+    yaml = await import("js-yaml");
+  }
+  return yaml;
+}
 
 // =============================================================================
 // Configuration Cache
@@ -18,45 +27,83 @@ import type { YamlConfig } from "../types/yaml";
 let cachedConfig: YamlConfig | null = null;
 
 // =============================================================================
-// Configuration Loading
+// Configuration Paths
 // =============================================================================
 
-/**
- * Load and parse the config.yaml file.
- *
- * @param configPath - Optional path to the config file (defaults to process.cwd()/config.yaml)
- * @returns Parsed configuration object
- *
- * @throws {Error} If the config file is not found
- * @throws {Error} If the config file is invalid YAML
- *
- * @example
- * ```typescript
- * const config = await getYamlConfig();
- * console.log(config.org.name);
- * ```
- */
+function findConfigPath(): string {
+  if (process.env.LEADERBOARD_DATA_PATH) {
+    const envPath = join(
+      process.env.LEADERBOARD_DATA_PATH,
+      "leaderboard",
+      "config.yaml",
+    );
+    if (existsSync(envPath)) {
+      return envPath;
+    }
+  }
+
+  const possiblePaths = [
+    join(process.cwd(), "data", "leaderboard", "config.yaml"),
+    join(process.cwd(), "..", "data", "leaderboard", "config.yaml"),
+    join(__dirname, "..", "..", "..", "data", "leaderboard", "config.yaml"),
+    join(__dirname, "..", "..", "data", "leaderboard", "config.yaml"),
+    join(
+      __dirname,
+      "..",
+      "..",
+      "..",
+      "..",
+      "data",
+      "leaderboard",
+      "config.yaml",
+    ),
+  ];
+
+  for (const path of possiblePaths) {
+    if (existsSync(path)) {
+      return path;
+    }
+  }
+
+  return join(process.cwd(), "config.yaml");
+}
+
+function resolveConfigPath(configPath?: string): string {
+  if (configPath) {
+    return configPath;
+  }
+
+  if (process.env.LEADERBOARD_DATA_PATH) {
+    return join(
+      process.env.LEADERBOARD_DATA_PATH,
+      "leaderboard",
+      "config.yaml",
+    );
+  }
+
+  return findConfigPath();
+}
+
+// =============================================================================
+// Async Loading
+// =============================================================================
+
 export async function getYamlConfig(configPath?: string): Promise<YamlConfig> {
   if (cachedConfig) {
     return cachedConfig;
   }
 
-  // Use LEADERBOARD_DATA_PATH if set, otherwise fall back to CWD
-  const dataPath = process.env.LEADERBOARD_DATA_PATH;
-  const resolvedPath =
-    configPath ??
-    (dataPath
-      ? join(dataPath, "leaderboard", "config.yaml")
-      : join(process.cwd(), "config.yaml"));
+  const resolvedPath = resolveConfigPath(configPath);
 
   if (!existsSync(resolvedPath)) {
     throw new Error(`Configuration file not found: ${resolvedPath}`);
   }
 
   const fileContents = readFileSync(resolvedPath, "utf8");
+  const jsYaml = await getYaml();
 
-  const rawConfig = yaml.load(fileContents, {
-    schema: yaml.JSON_SCHEMA,
+  const rawConfig = jsYaml.load(fileContents, {
+    schema: jsYaml.JSON_SCHEMA,
   }) as YamlConfig;
 
   if (rawConfig == null) {
@@ -65,7 +112,6 @@ export async function getYamlConfig(configPath?: string): Promise<YamlConfig> {
     );
   }
 
-  // Basic validation
   if (!rawConfig.org || !rawConfig.meta || !rawConfig.leaderboard) {
     throw new Error(
       "Invalid configuration: missing required sections (org, meta, leaderboard)",
@@ -76,31 +122,16 @@ export async function getYamlConfig(configPath?: string): Promise<YamlConfig> {
   return cachedConfig;
 }
 
-/**
- * Load and parse the config.yaml file synchronously.
- *
- * @param configPath - Optional path to the config file
- * @returns Parsed configuration object
- *
- * @remarks
- * This function uses dynamic import with a workaround for synchronous loading.
- * Prefer `getYamlConfig()` for async contexts.
- *
- * @throws {Error} If the config file is not found
- * @throws {Error} If the config file is invalid YAML
- */
+// =============================================================================
+// Synchronous Loading
+// =============================================================================
+
 export function getYamlConfigSync(configPath?: string): YamlConfig {
   if (cachedConfig) {
     return cachedConfig;
   }
 
-  // Use LEADERBOARD_DATA_PATH if set, otherwise fall back to CWD
-  const dataPath = process.env.LEADERBOARD_DATA_PATH;
-  const resolvedPath =
-    configPath ??
-    (dataPath
-      ? join(dataPath, "leaderboard", "config.yaml")
-      : join(process.cwd(), "config.yaml"));
+  const resolvedPath = resolveConfigPath(configPath);
 
   if (!existsSync(resolvedPath)) {
     throw new Error(`Configuration file not found: ${resolvedPath}`);
@@ -108,8 +139,10 @@ export function getYamlConfigSync(configPath?: string): YamlConfig {
 
   const fileContents = readFileSync(resolvedPath, "utf8");
 
-  const rawConfig = yaml.load(fileContents, {
-    schema: yaml.JSON_SCHEMA,
+  const jsYaml = require("js-yaml");
+
+  const rawConfig = jsYaml.load(fileContents, {
+    schema: jsYaml.JSON_SCHEMA,
   }) as YamlConfig;
 
   if (rawConfig == null) {
@@ -118,7 +151,6 @@ export function getYamlConfigSync(configPath?: string): YamlConfig {
     );
   }
 
-  // Basic validation
   if (!rawConfig.org || !rawConfig.meta || !rawConfig.leaderboard) {
     throw new Error(
       "Invalid configuration: missing required sections (org, meta, leaderboard)",
@@ -129,10 +161,10 @@ export function getYamlConfigSync(configPath?: string): YamlConfig {
   return cachedConfig;
 }
 
-/**
- * Clear the cached YAML configuration.
- * Useful for testing or when configuration needs to be reloaded.
- */
+// =============================================================================
+// Cache Management
+// =============================================================================
+
 export function clearYamlConfigCache(): void {
   cachedConfig = null;
 }
@@ -141,24 +173,12 @@ export function clearYamlConfigCache(): void {
 // Role Helpers
 // =============================================================================
 
-/**
- * Get all role names that are marked as hidden.
- *
- * @param config - The YAML configuration object
- * @returns Array of hidden role slugs
- */
 export function getHiddenRoles(config: YamlConfig): string[] {
   return Object.entries(config.leaderboard.roles)
     .filter(([, roleConfig]) => roleConfig.hidden === true)
     .map(([slug]) => slug);
 }
 
-/**
- * Get all role names that are not hidden.
- *
- * @param config - The YAML configuration object
- * @returns Array of visible role slugs
- */
 export function getVisibleRoles(config: YamlConfig): string[] {
   return Object.entries(config.leaderboard.roles)
     .filter(([, roleConfig]) => roleConfig.hidden !== true)
