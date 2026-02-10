@@ -10,7 +10,7 @@ import { readdir, readFile } from "node:fs/promises";
 import { join, basename, extname } from "node:path";
 import matter from "gray-matter";
 import { addContributors } from "@leaderboard/database";
-import type { ContributorMeta, ImportResult } from "../types";
+import type { ContributorMeta } from "../types";
 
 // =============================================================================
 // Constants
@@ -68,7 +68,7 @@ export async function importContributors(dataPath: string): Promise<string[]> {
   try {
     const files = await readdir(contributorsDir);
     const mdFiles = files.filter(
-      (f) => extname(f) === MARKDOWN_EXT && !f.startsWith(SKIP_PREFIX)
+      (f) => extname(f) === MARKDOWN_EXT && !f.startsWith(SKIP_PREFIX),
     );
 
     for (const file of mdFiles) {
@@ -118,7 +118,7 @@ export async function importContributors(dataPath: string): Promise<string[]> {
  * ```
  */
 export async function getContributorMeta(
-  filePath: string
+  filePath: string,
 ): Promise<ContributorMeta> {
   const content = await readFile(filePath, "utf-8");
   const { data } = matter(content) as { data: ContributorMeta };
