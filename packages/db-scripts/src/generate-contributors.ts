@@ -1,10 +1,9 @@
 import { Octokit } from "octokit";
-import { loadConfig } from "../config/index.js";
+import { loadConfig } from "@leaderboard/config";
 import fs from "node:fs/promises";
 import path from "node:path";
 
 const CONTRIBUTORS_DIR = "data/contributors";
-const DATA_PATH = "data";
 
 async function generateContributors() {
   const config = loadConfig();
@@ -42,12 +41,12 @@ async function generateContributors() {
         });
 
         for (const c of contribs) {
-          if (!contributors.has(c.login!)) {
-            contributors.set(c.login!, {
-              name: c.login!,
-              avatar: c.avatar_url,
-            });
-          }
+          if (!c.login) continue;
+          if (contributors.has(c.login)) continue;
+          contributors.set(c.login, {
+            name: c.login,
+            avatar: c.avatar_url ?? `https://github.com/${c.login}.png`,
+          });
         }
       } catch (e) {
         console.warn(`  skip ${repo.name}: ${(e as Error).message}`);
