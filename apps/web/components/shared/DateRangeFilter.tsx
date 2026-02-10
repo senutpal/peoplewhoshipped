@@ -46,15 +46,32 @@ export function DateRangeFilter({
 }: DateRangeFilterProps): React.ReactElement {
   const hasDateFilter = startDate !== "" || endDate !== "";
 
+  const today = new Date().toISOString().split("T")[0];
+
+  const handleStartDateChange = (date: string) => {
+    onStartDateChange(date);
+    if (endDate && date > endDate) {
+      onEndDateChange(date);
+    }
+  };
+
+  const handleEndDateChange = (date: string) => {
+    onEndDateChange(date);
+    if (startDate && date < startDate) {
+      onStartDateChange(date);
+    }
+  };
+
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button 
-          variant="outline" 
-          size="icon" 
+        <Button
+          variant="outline"
+          size="icon"
           className={cn(
             "h-8 w-8 rounded-full border border-zinc-200 bg-transparent text-zinc-500 hover:text-zinc-900 dark:border-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-50 transition-colors",
-            hasDateFilter && "border-emerald-500/50 text-emerald-600 bg-emerald-50/50 dark:bg-emerald-950/30 dark:text-emerald-400"
+            hasDateFilter &&
+              "border-emerald-500/50 text-emerald-600 bg-emerald-50/50 dark:bg-emerald-950/30 dark:text-emerald-400",
           )}
         >
           <Calendar className="h-4 w-4" />
@@ -64,11 +81,13 @@ export function DateRangeFilter({
       <PopoverContent className="w-80 p-4 bg-background" align="end">
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h4 className="font-medium text-sm text-zinc-900 dark:text-zinc-100">Date Range</h4>
+            <h4 className="font-medium text-sm text-zinc-900 dark:text-zinc-100">
+              Date Range
+            </h4>
             {hasDateFilter && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 className="h-auto p-0 text-xs text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
                 onClick={() => {
                   onStartDateChange("");
@@ -91,7 +110,8 @@ export function DateRangeFilter({
                 id={`${idPrefix}-start-date`}
                 type="date"
                 value={startDate}
-                onChange={(e) => onStartDateChange(e.target.value)}
+                max={endDate || today}
+                onChange={(e) => handleStartDateChange(e.target.value)}
                 className="h-9 font-mono text-sm"
               />
             </div>
@@ -106,7 +126,9 @@ export function DateRangeFilter({
                 id={`${idPrefix}-end-date`}
                 type="date"
                 value={endDate}
-                onChange={(e) => onEndDateChange(e.target.value)}
+                min={startDate}
+                max={today}
+                onChange={(e) => handleEndDateChange(e.target.value)}
                 className="h-9 font-mono text-sm"
               />
             </div>
