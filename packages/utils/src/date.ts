@@ -6,7 +6,14 @@
  * for the leaderboard system.
  */
 
-import { formatDistanceToNow } from "date-fns";
+import {
+  formatDistanceToNow,
+  subDays,
+  subMonths,
+  subYears,
+  startOfDay,
+  endOfDay,
+} from "date-fns";
 
 // =============================================================================
 // Types
@@ -34,7 +41,7 @@ export type DateRangePeriod = "week" | "month" | "year";
  * // endDate: now
  *
  * const { startDate, endDate } = getDateRange("month");
- * // startDate: 30 days ago
+ * // startDate: 1 month ago
  * // endDate: now
  * ```
  */
@@ -42,22 +49,25 @@ export function getDateRange(period: DateRangePeriod): {
   startDate: Date;
   endDate: Date;
 } {
-  const endDate = new Date();
-  const startDate = new Date();
+  const endDate = endOfDay(new Date());
 
   switch (period) {
     case "week":
-      startDate.setDate(endDate.getDate() - 7);
-      break;
+      return {
+        startDate: startOfDay(subDays(endDate, 7)),
+        endDate,
+      };
     case "month":
-      startDate.setDate(endDate.getDate() - 30);
-      break;
+      return {
+        startDate: startOfDay(subMonths(endDate, 1)),
+        endDate,
+      };
     case "year":
-      startDate.setDate(endDate.getDate() - 365);
-      break;
+      return {
+        startDate: startOfDay(subYears(endDate, 1)),
+        endDate,
+      };
   }
-
-  return { startDate, endDate };
 }
 
 // =============================================================================
