@@ -56,12 +56,10 @@ export class LeaderboardPage {
    */
   async waitForLoad() {
     await this.page.waitForLoadState("domcontentloaded");
-    // Wait for any loading spinners to disappear
-    await expect(this.loadingSpinner)
-      .toHaveCount(0, { timeout: 10000 })
-      .catch(() => {
-        // Ignore if no spinner exists
-      });
+    const spinnerCount = await this.loadingSpinner.count();
+    if (spinnerCount > 0) {
+      await expect(this.loadingSpinner).toHaveCount(0, { timeout: 10000 });
+    }
   }
 
   /**
@@ -99,11 +97,21 @@ export class LeaderboardPage {
   async searchContributor(query: string) {
     if (await this.searchInput.isVisible()) {
       await this.searchInput.fill(query);
-      await this.page
-        .waitForSelector("[data-testid='contributor-card']", {
+      try {
+        await this.page.waitForSelector("[data-testid='contributor-card']", {
           state: "attached",
-        })
-        .catch(() => {});
+          timeout: 10000,
+        });
+      } catch (error) {
+        if (error instanceof Error && error.name === "TimeoutError") {
+          console.log("No contributor cards found after search");
+        } else {
+          console.warn(
+            "Unexpected error waiting for contributor cards:",
+            error,
+          );
+        }
+      }
     }
   }
 
