@@ -8,6 +8,7 @@
     "import": "bun --env-file=../../.env run src/import.ts",
     "export": "bun --env-file=../../.env run src/export.ts",
     "prebuild-static": "bun --env-file=../../.env run src/prebuild-static-data.ts",
+    "generate-contributors": "bun --env-file=../../.env run src/generate-contributors.ts",
     "dev": "echo 'db-scripts package ready'",
     "build": "bun build src/*.ts --outdir dist --target node",
     "clean": "rm -rf dist",
@@ -18,6 +19,7 @@
     "@leaderboard/config": "workspace:*",
     "@leaderboard/utils": "workspace:*",
     "@leaderboard/scraper-core": "workspace:*",
+    "octokit": "^4.0.2",
     "yaml": "^2.7.0",
     "gray-matter": "^4.0.3"
   },

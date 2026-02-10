@@ -1,5 +1,5 @@
 {
-  "name": "leaderboard-monorepo",
+  "name": "peoplewhoshipped",
   "version": "0.0.0",
   "private": true,
   "workspaces": [
@@ -31,6 +31,7 @@
     "scrape:slack": "bun run --filter @leaderboard/scraper-slack scrape",
     "scrape:roles": "bun run --filter @leaderboard/scraper-roles scrape",
     "scrape:all": "bun --filter '@leaderboard/scraper-*' scrape",
+    "contributors:generate": "bun run --filter @leaderboard/db-scripts generate-contributors",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\""
   },
   "devDependencies": {
